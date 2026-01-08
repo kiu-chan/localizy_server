@@ -13,3 +13,4 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/refint/Localizy.Application.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/ref/Localizy.Application.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.sourcelink.json

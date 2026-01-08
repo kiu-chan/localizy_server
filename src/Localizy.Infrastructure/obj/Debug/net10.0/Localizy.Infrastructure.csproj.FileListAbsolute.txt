@@ -17,3 +17,4 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.genruntimeconfig.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/ref/Localizy.Infrastructure.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.sourcelink.json

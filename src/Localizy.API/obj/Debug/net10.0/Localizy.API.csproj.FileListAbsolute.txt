@@ -223,3 +223,4 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.genruntimeconfig.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/ref/Localizy.API.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.sourcelink.json
