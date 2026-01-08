@@ -10,12 +10,23 @@ public class ApplicationDbContext : DbContext
     {
     }
 
+    public DbSet<User> Users { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<Translation> Translations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Configure User
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.FullName).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.PasswordHash).IsRequired();
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
 
         // Configure Project
         modelBuilder.Entity<Project>(entity =>
@@ -24,6 +35,12 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.DefaultLanguage).HasMaxLength(10);
+            
+            // Relationship with User
+            entity.HasOne(p => p.User)
+                  .WithMany(u => u.Projects)
+                  .HasForeignKey(p => p.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Configure Translation
@@ -34,13 +51,11 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Language).IsRequired().HasMaxLength(10);
             entity.Property(e => e.Value).IsRequired();
 
-            // Relationship
             entity.HasOne(t => t.Project)
                   .WithMany(p => p.Translations)
                   .HasForeignKey(t => t.ProjectId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            // Index for faster queries
             entity.HasIndex(t => new { t.ProjectId, t.Key, t.Language }).IsUnique();
         });
     }
