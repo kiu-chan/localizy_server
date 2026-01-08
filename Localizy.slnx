@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Localizy.API/Localizy.API.csproj" />
+    <Project Path="src/Localizy.Application/Localizy.Application.csproj" />
+    <Project Path="src/Localizy.Domain/Localizy.Domain.csproj" />
+    <Project Path="src/Localizy.Infrastructure/Localizy.Infrastructure.csproj" />
+  </Folder>
+</Solution>

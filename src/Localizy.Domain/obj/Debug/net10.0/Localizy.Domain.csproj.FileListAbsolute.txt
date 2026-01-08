@@ -1,0 +1,11 @@
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/bin/Debug/net10.0/Localizy.Domain.deps.json
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/bin/Debug/net10.0/Localizy.Domain.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/bin/Debug/net10.0/Localizy.Domain.pdb
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/Localizy.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/Localizy.Domain.AssemblyInfoInputs.cache
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/Localizy.Domain.AssemblyInfo.cs
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/Localizy.Domain.csproj.CoreCompileInputs.cache
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/Localizy.Domain.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/refint/Localizy.Domain.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/Localizy.Domain.pdb
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Domain/obj/Debug/net10.0/ref/Localizy.Domain.dll
