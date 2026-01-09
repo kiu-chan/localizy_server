@@ -27,7 +27,6 @@ public class UserService : IUserService
 
     public async Task<UserResponseDto> CreateAsync(CreateUserDto dto)
     {
-        // Kiểm tra email đã tồn tại
         var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
         if (existingUser != null)
         {
@@ -39,7 +38,7 @@ public class UserService : IUserService
             Id = Guid.NewGuid(),
             Email = dto.Email,
             FullName = dto.FullName,
-            PasswordHash = HashPassword(dto.Password), // Thực tế nên dùng BCrypt
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             IsActive = true
         };
 
@@ -88,16 +87,10 @@ public class UserService : IUserService
             Email = user.Email,
             FullName = user.FullName,
             IsActive = user.IsActive,
+            Role = user.Role.ToString(),
             LastLoginAt = user.LastLoginAt,
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt
         };
-    }
-
-    private static string HashPassword(string password)
-    {
-        // Thực tế nên dùng BCrypt.Net-Next
-        // return BCrypt.Net.BCrypt.HashPassword(password);
-        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
     }
 }

@@ -226,3 +226,5 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.sourcelink.json
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/DotNetEnv.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Sprache.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/BCrypt.Net-Next.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -25,6 +25,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
             entity.Property(e => e.FullName).IsRequired().HasMaxLength(200);
             entity.Property(e => e.PasswordHash).IsRequired();
+            entity.Property(e => e.Role).HasConversion<string>();
             entity.HasIndex(e => e.Email).IsUnique();
         });
 
@@ -36,7 +37,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.DefaultLanguage).HasMaxLength(10);
             
-            // Relationship with User
             entity.HasOne(p => p.User)
                   .WithMany(u => u.Projects)
                   .HasForeignKey(p => p.UserId)

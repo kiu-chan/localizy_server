@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Localizy.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a68722b0c4a5e9325c43871e77599c2f964ccd7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+76ec0b5f31d93c841a938e7ddfa8f4105e00d503")]
 [assembly: System.Reflection.AssemblyProductAttribute("Localizy.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Localizy.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
