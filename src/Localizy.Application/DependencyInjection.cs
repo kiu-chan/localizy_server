@@ -1,4 +1,5 @@
 using Localizy.Application.Features.Auth.Services;
+using Localizy.Application.Features.Settings.Services;
 using Localizy.Application.Features.Users.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
         // Register Services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ISettingService, SettingService>();
 
         return services;
     }
