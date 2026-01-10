@@ -1,5 +1,6 @@
 using Localizy.Application.Common.Interfaces;
 using Localizy.Domain.Entities;
+using Localizy.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Localizy.Infrastructure.Persistence.Repositories;
@@ -30,6 +31,38 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Include(u => u.Projects)
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<User>> GetByRoleAsync(UserRole role)
+    {
+        return await _context.Users
+            .Where(u => u.Role == role)
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<User>> GetByStatusAsync(bool isActive)
+    {
+        return await _context.Users
+            .Where(u => u.IsActive == isActive)
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<User>> SearchAsync(string searchTerm)
+    {
+        var lowerSearchTerm = searchTerm.ToLower();
+        
+        return await _context.Users
+            .Where(u => 
+                u.FullName.ToLower().Contains(lowerSearchTerm) ||
+                u.Email.ToLower().Contains(lowerSearchTerm) ||
+                (u.Phone != null && u.Phone.Contains(searchTerm)) ||
+                (u.Location != null && u.Location.ToLower().Contains(lowerSearchTerm))
+            )
+            .OrderByDescending(u => u.CreatedAt)
             .ToListAsync();
     }
 
@@ -60,5 +93,15 @@ public class UserRepository : IUserRepository
     public async Task<bool> ExistsAsync(Guid id)
     {
         return await _context.Users.AnyAsync(u => u.Id == id);
+    }
+
+    public async Task<int> CountByRoleAsync(UserRole role)
+    {
+        return await _context.Users.CountAsync(u => u.Role == role);
+    }
+
+    public async Task<int> CountByStatusAsync(bool isActive)
+    {
+        return await _context.Users.CountAsync(u => u.IsActive == isActive);
     }
 }
