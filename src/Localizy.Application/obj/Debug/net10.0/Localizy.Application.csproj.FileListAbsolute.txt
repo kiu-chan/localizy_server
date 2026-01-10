@@ -8,9 +8,9 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.AssemblyInfoInputs.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.AssemblyInfo.cs
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.csproj.CoreCompileInputs.cache
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.sourcelink.json
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.C38090B2.Up2Date
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/refint/Localizy.Application.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/ref/Localizy.Application.dll
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Application/obj/Debug/net10.0/Localizy.Application.sourcelink.json

@@ -11,10 +11,10 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.AssemblyInfoInputs.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.AssemblyInfo.cs
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.sourcelink.json
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.A585F253.Up2Date
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/refint/Localizy.Infrastructure.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.genruntimeconfig.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/ref/Localizy.Infrastructure.dll
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.Infrastructure/obj/Debug/net10.0/Localizy.Infrastructure.sourcelink.json

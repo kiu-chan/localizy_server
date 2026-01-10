@@ -54,10 +54,13 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Localizy.API.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Azure.Core.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Azure.Identity.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/BCrypt.Net-Next.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/DotNetEnv.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/FluentValidation.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Humanizer.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/MediatR.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/MediatR.Contracts.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.AspNetCore.OpenApi.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.Bcl.AsyncInterfaces.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.Bcl.Cryptography.dll
@@ -91,6 +94,7 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.SqlServer.Server.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Mono.TextTemplating.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Newtonsoft.Json.dll
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Sprache.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
@@ -208,6 +212,7 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.csproj.CoreCompileInputs.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.MvcApplicationPartsAssemblyInfo.cs
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.MvcApplicationPartsAssemblyInfo.cache
+/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.sourcelink.json
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/rjimswa.dswa.cache.json
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
@@ -223,8 +228,3 @@
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.pdb
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.genruntimeconfig.cache
 /Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/ref/Localizy.API.dll
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/obj/Debug/net10.0/Localizy.API.sourcelink.json
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/DotNetEnv.dll
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Sprache.dll
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/BCrypt.Net-Next.dll
-/Users/hoangkhanh/Documents/code/server/localizy_server/src/Localizy.API/bin/Debug/net10.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Localizy.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f0e9d145feea2c6b94da10640fc8cc5b9863c69e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd5bca95fcf726cda60517c67b9beb0f2d855542")]
 [assembly: System.Reflection.AssemblyProductAttribute("Localizy.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Localizy.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
