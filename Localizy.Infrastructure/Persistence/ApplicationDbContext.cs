@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Translation> Translations { get; set; }
     public DbSet<Setting> Settings { get; set; }
     public DbSet<Address> Addresses { get; set; }
+    public DbSet<Validation> Validations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,7 +42,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.DefaultLanguage).HasMaxLength(10);
-            
+
             entity.HasOne(p => p.User)
                   .WithMany(u => u.Projects)
                   .HasForeignKey(p => p.UserId)
@@ -72,7 +73,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Value).IsRequired();
             entity.Property(e => e.Category).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(500);
-            
+
             entity.HasIndex(e => e.Key).IsUnique();
             entity.HasIndex(e => e.Category);
         });
@@ -111,6 +112,43 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.Type);
             entity.HasIndex(e => e.City);
             entity.HasIndex(e => new { e.Latitude, e.Longitude });
+        });
+
+        // Configure Validation
+        modelBuilder.Entity<Validation>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RequestId).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Status).HasConversion<string>();
+            entity.Property(e => e.Priority).HasConversion<string>();
+            entity.Property(e => e.RequestType).HasConversion<string>();
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+            entity.Property(e => e.OldData).HasMaxLength(4000);
+            entity.Property(e => e.NewData).HasMaxLength(4000);
+            entity.Property(e => e.ProcessingNotes).HasMaxLength(2000);
+            entity.Property(e => e.RejectionReason).HasMaxLength(2000);
+
+            // Relationships
+            entity.HasOne(v => v.Address)
+                  .WithMany()
+                  .HasForeignKey(v => v.AddressId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(v => v.SubmittedByUser)
+                  .WithMany()
+                  .HasForeignKey(v => v.SubmittedByUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(v => v.ProcessedByUser)
+                  .WithMany()
+                  .HasForeignKey(v => v.ProcessedByUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            entity.HasIndex(e => e.RequestId).IsUnique();
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.Priority);
+            entity.HasIndex(e => e.SubmittedDate);
         });
     }
 

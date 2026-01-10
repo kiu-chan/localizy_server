@@ -50,122 +50,136 @@ public static class DataSeeder
             Console.WriteLine("✓ Regular user created: user@localizy.com / User@123");
 
             // Seed sample addresses
-            var sampleAddresses = new List<Address>
+            var address1 = new Address
             {
-                new Address
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Hồ Hoàn Kiếm",
-                    FullAddress = "Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội",
-                    City = "Hà Nội",
-                    Country = "Việt Nam",
-                    Type = "Landmark",
-                    Category = "Lake",
-                    Latitude = 21.0285,
-                    Longitude = 105.8542,
-                    Description = "Hồ nước ngọt nằm ở trung tâm Hà Nội, biểu tượng của thủ đô",
-                    Status = AddressStatus.Verified,
-                    Rating = 4.8,
-                    Views = 15234,
-                    SubmittedByUserId = regularUser.Id,
-                    SubmittedDate = DateTime.UtcNow.AddDays(-30),
-                    VerifiedByUserId = admin.Id,
-                    VerifiedDate = DateTime.UtcNow.AddDays(-29),
-                    CreatedAt = DateTime.UtcNow.AddDays(-30)
-                },
-                new Address
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Nhà Thờ Lớn Hà Nội",
-                    FullAddress = "40 Nhà Chung, Hoàn Kiếm, Hà Nội",
-                    City = "Hà Nội",
-                    Country = "Việt Nam",
-                    Type = "Religious",
-                    Category = "Cathedral",
-                    Latitude = 21.0288,
-                    Longitude = 105.8489,
-                    Description = "Nhà thờ Công giáo Gothic được xây dựng vào năm 1886",
-                    Phone = "+84 24 3828 5967",
-                    Status = AddressStatus.Verified,
-                    Rating = 4.6,
-                    Views = 8765,
-                    SubmittedByUserId = regularUser.Id,
-                    SubmittedDate = DateTime.UtcNow.AddDays(-25),
-                    VerifiedByUserId = admin.Id,
-                    VerifiedDate = DateTime.UtcNow.AddDays(-24),
-                    CreatedAt = DateTime.UtcNow.AddDays(-25)
-                },
-                new Address
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Phở Thìn Bờ Hồ",
-                    FullAddress = "13 Lò Đúc, Hai Bà Trưng, Hà Nội",
-                    City = "Hà Nội",
-                    Country = "Việt Nam",
-                    Type = "Restaurant",
-                    Category = "Vietnamese Restaurant",
-                    Latitude = 21.0245,
-                    Longitude = 105.8516,
-                    Description = "Quán phở nổi tiếng với món phở bò trộn đặc trưng",
-                    Phone = "+84 24 3942 8866",
-                    OpeningHours = "06:00 - 22:00",
-                    Status = AddressStatus.Pending,
-                    Rating = 4.5,
-                    Views = 3421,
-                    SubmittedByUserId = regularUser.Id,
-                    SubmittedDate = DateTime.UtcNow.AddDays(-2),
-                    CreatedAt = DateTime.UtcNow.AddDays(-2)
-                },
-                new Address
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Bảo Tàng Lịch Sử Quốc Gia",
-                    FullAddress = "1 Tràng Tiền, Hoàn Kiếm, Hà Nội",
-                    City = "Hà Nội",
-                    Country = "Việt Nam",
-                    Type = "Museum",
-                    Category = "History Museum",
-                    Latitude = 21.0245,
-                    Longitude = 105.8571,
-                    Description = "Bảo tàng trưng bày hiện vật lịch sử Việt Nam",
-                    Phone = "+84 24 3825 2853",
-                    Website = "www.baotanglichsu.vn",
-                    OpeningHours = "08:00 - 17:00 (Đóng cửa thứ Hai)",
-                    Status = AddressStatus.Verified,
-                    Rating = 4.4,
-                    Views = 5678,
-                    SubmittedByUserId = regularUser.Id,
-                    SubmittedDate = DateTime.UtcNow.AddDays(-20),
-                    VerifiedByUserId = admin.Id,
-                    VerifiedDate = DateTime.UtcNow.AddDays(-19),
-                    CreatedAt = DateTime.UtcNow.AddDays(-20)
-                },
-                new Address
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Chợ Đồng Xuân",
-                    FullAddress = "Đồng Xuân, Hoàn Kiếm, Hà Nội",
-                    City = "Hà Nội",
-                    Country = "Việt Nam",
-                    Type = "Shopping",
-                    Category = "Market",
-                    Latitude = 21.0364,
-                    Longitude = 105.8477,
-                    Description = "Chợ truyền thống lớn nhất Hà Nội",
-                    OpeningHours = "06:00 - 19:00",
-                    Status = AddressStatus.Pending,
-                    Rating = 4.2,
-                    Views = 2341,
-                    SubmittedByUserId = regularUser.Id,
-                    SubmittedDate = DateTime.UtcNow.AddDays(-1),
-                    CreatedAt = DateTime.UtcNow.AddDays(-1)
-                }
+                Id = Guid.NewGuid(),
+                Name = "Hồ Hoàn Kiếm",
+                FullAddress = "Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội",
+                City = "Hà Nội",
+                Country = "Việt Nam",
+                Type = "Landmark",
+                Category = "Lake",
+                Latitude = 21.0285,
+                Longitude = 105.8542,
+                Description = "Hồ nước ngọt nằm ở trung tâm Hà Nội",
+                Status = AddressStatus.Verified,
+                Rating = 4.8,
+                Views = 15234,
+                SubmittedByUserId = regularUser.Id,
+                SubmittedDate = DateTime.UtcNow.AddDays(-30),
+                VerifiedByUserId = admin.Id,
+                VerifiedDate = DateTime.UtcNow.AddDays(-29),
+                CreatedAt = DateTime.UtcNow.AddDays(-30)
             };
 
-            context.Addresses.AddRange(sampleAddresses);
+            var address2 = new Address
+            {
+                Id = Guid.NewGuid(),
+                Name = "Phở Thìn Bờ Hồ",
+                FullAddress = "13 Lò Đúc, Hai Bà Trưng, Hà Nội",
+                City = "Hà Nội",
+                Country = "Việt Nam",
+                Type = "Restaurant",
+                Category = "Vietnamese Restaurant",
+                Latitude = 21.0245,
+                Longitude = 105.8516,
+                Description = "Quán phở nổi tiếng",
+                Phone = "+84 24 3942 8866",
+                Status = AddressStatus.Pending,
+                Rating = 4.5,
+                Views = 3421,
+                SubmittedByUserId = regularUser.Id,
+                SubmittedDate = DateTime.UtcNow.AddDays(-2),
+                CreatedAt = DateTime.UtcNow.AddDays(-2)
+            };
+
+            var address3 = new Address
+            {
+                Id = Guid.NewGuid(),
+                Name = "Bảo Tàng Lịch Sử",
+                FullAddress = "1 Tràng Tiền, Hoàn Kiếm, Hà Nội",
+                City = "Hà Nội",
+                Country = "Việt Nam",
+                Type = "Museum",
+                Category = "History Museum",
+                Latitude = 21.0245,
+                Longitude = 105.8571,
+                Description = "Bảo tàng lịch sử Việt Nam",
+                Status = AddressStatus.Pending,
+                Rating = 4.4,
+                Views = 5678,
+                SubmittedByUserId = regularUser.Id,
+                SubmittedDate = DateTime.UtcNow.AddDays(-5),
+                CreatedAt = DateTime.UtcNow.AddDays(-5)
+            };
+
+            context.Addresses.AddRange(address1, address2, address3);
+            await context.SaveChangesAsync();
+
+            // Seed sample validations
+            var validation1 = new Validation
+            {
+                Id = Guid.NewGuid(),
+                RequestId = "VAL-2024-001",
+                AddressId = address2.Id,
+                Status = ValidationStatus.Pending,
+                Priority = ValidationPriority.High,
+                RequestType = ValidationRequestType.NewAddress,
+                SubmittedByUserId = regularUser.Id,
+                SubmittedDate = DateTime.UtcNow.AddDays(-2),
+                Notes = "Quán phở nổi tiếng cần xác thực thông tin",
+                PhotosProvided = true,
+                DocumentsProvided = true,
+                LocationVerified = false,
+                AttachmentsCount = 3,
+                CreatedAt = DateTime.UtcNow.AddDays(-2)
+            };
+
+            var validation2 = new Validation
+            {
+                Id = Guid.NewGuid(),
+                RequestId = "VAL-2024-002",
+                AddressId = address1.Id,
+                Status = ValidationStatus.Verified,
+                Priority = ValidationPriority.Medium,
+                RequestType = ValidationRequestType.UpdateInformation,
+                SubmittedByUserId = regularUser.Id,
+                SubmittedDate = DateTime.UtcNow.AddDays(-30),
+                Notes = "Cập nhật thông tin giờ mở cửa",
+                OldData = "{\"openingHours\":\"24/7\"}",
+                NewData = "{\"openingHours\":\"06:00 - 22:00\"}",
+                PhotosProvided = true,
+                DocumentsProvided = false,
+                LocationVerified = true,
+                AttachmentsCount = 1,
+                ProcessedByUserId = admin.Id,
+                ProcessedDate = DateTime.UtcNow.AddDays(-29),
+                ProcessingNotes = "Đã xác thực thông tin từ nguồn chính thức",
+                CreatedAt = DateTime.UtcNow.AddDays(-30)
+            };
+
+            var validation3 = new Validation
+            {
+                Id = Guid.NewGuid(),
+                RequestId = "VAL-2024-003",
+                AddressId = address3.Id,
+                Status = ValidationStatus.Pending,
+                Priority = ValidationPriority.Medium,
+                RequestType = ValidationRequestType.NewAddress,
+                SubmittedByUserId = regularUser.Id,
+                SubmittedDate = DateTime.UtcNow.AddDays(-5),
+                Notes = "Bảo tàng mới cần xác thực",
+                PhotosProvided = true,
+                DocumentsProvided = true,
+                LocationVerified = false,
+                AttachmentsCount = 5,
+                CreatedAt = DateTime.UtcNow.AddDays(-5)
+            };
+
+            context.Validations.AddRange(validation1, validation2, validation3);
             await context.SaveChangesAsync();
             
-            Console.WriteLine("✓ Sample addresses created");
+            Console.WriteLine("✓ Sample addresses and validations created");
         }
 
         // Seed Settings
@@ -173,7 +187,6 @@ public static class DataSeeder
         {
             var settings = new List<Setting>
             {
-                // App Download Links
                 new Setting
                 {
                     Id = Guid.NewGuid(),
@@ -192,37 +205,6 @@ public static class DataSeeder
                     Category = SettingCategory.AppDownload,
                     CreatedAt = DateTime.UtcNow
                 },
-
-                // Social Media Links
-                new Setting
-                {
-                    Id = Guid.NewGuid(),
-                    Key = SettingKey.FacebookLink,
-                    Value = "https://facebook.com/localizy",
-                    Description = "Link Facebook",
-                    Category = SettingCategory.SocialMedia,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Setting
-                {
-                    Id = Guid.NewGuid(),
-                    Key = SettingKey.TwitterLink,
-                    Value = "https://twitter.com/localizy",
-                    Description = "Link Twitter",
-                    Category = SettingCategory.SocialMedia,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Setting
-                {
-                    Id = Guid.NewGuid(),
-                    Key = SettingKey.InstagramLink,
-                    Value = "https://instagram.com/localizy",
-                    Description = "Link Instagram",
-                    Category = SettingCategory.SocialMedia,
-                    CreatedAt = DateTime.UtcNow
-                },
-
-                // Contact Information
                 new Setting
                 {
                     Id = Guid.NewGuid(),
@@ -232,17 +214,6 @@ public static class DataSeeder
                     Category = SettingCategory.Contact,
                     CreatedAt = DateTime.UtcNow
                 },
-                new Setting
-                {
-                    Id = Guid.NewGuid(),
-                    Key = SettingKey.Phone,
-                    Value = "+84 123 456 789",
-                    Description = "Số điện thoại liên hệ",
-                    Category = SettingCategory.Contact,
-                    CreatedAt = DateTime.UtcNow
-                },
-
-                // General Information
                 new Setting
                 {
                     Id = Guid.NewGuid(),
