@@ -1,2 +1,12 @@
 # Environment variables
 .env
+
+src/Localizy.API/bin/
+src/Localizy.API/obj/
+src/Localizy.Application/bin/
+src/Localizy.Application/obj/
+src/Localizy.Domain/bin/
+src/Localizy.Domain/obj/
+src/Localizy.Infrastructure/bin/
+src/Localizy.Infrastructure/obj/
+Localizy.API.dll
