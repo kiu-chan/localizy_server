@@ -19,6 +19,7 @@ public class AddressRepository : IAddressRepository
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
+            .Include(a => a.City)
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
@@ -27,6 +28,7 @@ public class AddressRepository : IAddressRepository
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
+            .Include(a => a.City)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
     }
@@ -36,6 +38,7 @@ public class AddressRepository : IAddressRepository
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
+            .Include(a => a.City)
             .Where(a => a.Status == status)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
@@ -46,6 +49,7 @@ public class AddressRepository : IAddressRepository
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
+            .Include(a => a.City)
             .Where(a => a.Type.ToLower() == type.ToLower())
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
@@ -56,6 +60,7 @@ public class AddressRepository : IAddressRepository
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
+            .Include(a => a.City)
             .Where(a => a.SubmittedByUserId == userId)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync();
@@ -68,10 +73,10 @@ public class AddressRepository : IAddressRepository
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
+            .Include(a => a.City)
             .Where(a => 
                 a.Name.ToLower().Contains(lowerSearchTerm) ||
                 a.FullAddress.ToLower().Contains(lowerSearchTerm) ||
-                a.City.ToLower().Contains(lowerSearchTerm) ||
                 a.Country.ToLower().Contains(lowerSearchTerm) ||
                 a.Category.ToLower().Contains(lowerSearchTerm)
             )
@@ -88,6 +93,13 @@ public class AddressRepository : IAddressRepository
         await _context.Entry(address)
             .Reference(a => a.SubmittedByUser)
             .LoadAsync();
+        
+        if (address.CityId.HasValue)
+        {
+            await _context.Entry(address)
+                .Reference(a => a.City)
+                .LoadAsync();
+        }
             
         return address;
     }
@@ -104,6 +116,13 @@ public class AddressRepository : IAddressRepository
         await _context.Entry(address)
             .Reference(a => a.VerifiedByUser)
             .LoadAsync();
+        
+        if (address.CityId.HasValue)
+        {
+            await _context.Entry(address)
+                .Reference(a => a.City)
+                .LoadAsync();
+        }
             
         return address;
     }

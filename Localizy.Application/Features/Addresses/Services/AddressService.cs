@@ -92,7 +92,7 @@ public class AddressService : IAddressService
             Id = Guid.NewGuid(),
             Name = dto.Name,
             FullAddress = dto.Address,
-            City = dto.City,
+            CityId = dto.CityId, // Lưu CityId thay vì City string
             Country = dto.Country,
             Type = dto.Type,
             Category = dto.Category,
@@ -122,8 +122,8 @@ public class AddressService : IAddressService
         if (!string.IsNullOrEmpty(dto.Address))
             address.FullAddress = dto.Address;
 
-        if (!string.IsNullOrEmpty(dto.City))
-            address.City = dto.City;
+        if (dto.CityId.HasValue)
+            address.CityId = dto.CityId; // Update CityId
 
         if (!string.IsNullOrEmpty(dto.Country))
             address.Country = dto.Country;
@@ -210,7 +210,12 @@ public class AddressService : IAddressService
             Id = address.Id,
             Name = address.Name,
             Address = address.FullAddress,
-            City = address.City,
+            City = address.City != null ? new AddressCityDto
+            {
+                Id = address.City.Id,
+                Name = address.City.Name,
+                Code = address.City.Code
+            } : null,
             Country = address.Country,
             Type = address.Type,
             Category = address.Category,

@@ -6,9 +6,13 @@ public class Address : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
     public string FullAddress { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
+    
+    // City relationship - CHỈ ĐỊNH NGHĨA MỘT LẦN
+    public Guid? CityId { get; set; }
+    public City? City { get; set; }
+    
     public string Country { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty; // Landmark, Museum, Restaurant, Religious, Street
+    public string Type { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     public AddressStatus Status { get; set; } = AddressStatus.Pending;
     

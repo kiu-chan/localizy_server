@@ -5,8 +5,11 @@ public class AddressResponseDto
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
+    
+    // Thay đổi từ City và Country thành CityInfo
+    public AddressCityDto? City { get; set; }
     public string Country { get; set; } = string.Empty;
+    
     public string Type { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
@@ -33,6 +36,14 @@ public class AddressResponseDto
     
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+}
+
+// Thêm DTO mới cho City info
+public class AddressCityDto
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
 }
 
 public class CoordinatesDto

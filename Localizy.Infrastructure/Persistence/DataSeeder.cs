@@ -10,9 +10,12 @@ public static class DataSeeder
     public static async Task SeedAsync(ApplicationDbContext context)
     {
         // Seed Admin user
+        User? admin = null;
+        User? regularUser = null;
+        
         if (!await context.Users.AnyAsync(u => u.Role == UserRole.Admin))
         {
-            var admin = new User
+            admin = new User
             {
                 Id = Guid.NewGuid(),
                 Email = "admin@localizy.com",
@@ -31,7 +34,7 @@ public static class DataSeeder
             Console.WriteLine("✓ Admin user created: admin@localizy.com / Admin@123");
 
             // Seed sample regular user
-            var regularUser = new User
+            regularUser = new User
             {
                 Id = Guid.NewGuid(),
                 Email = "user@localizy.com",
@@ -48,14 +51,93 @@ public static class DataSeeder
             await context.SaveChangesAsync();
 
             Console.WriteLine("✓ Regular user created: user@localizy.com / User@123");
+        }
+        else
+        {
+            admin = await context.Users.FirstOrDefaultAsync(u => u.Role == UserRole.Admin);
+            regularUser = await context.Users.FirstOrDefaultAsync(u => u.Role == UserRole.User);
+        }
 
-            // Seed sample addresses
+        // Seed Cities (phải seed trước addresses)
+        City? hanoiCity = null;
+        
+        if (!await context.Cities.AnyAsync())
+        {
+            var cities = new List<City>
+            {
+                new City
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Hà Nội",
+                    Code = "VN-HN",
+                    Country = "Việt Nam",
+                    Description = "Thủ đô của Việt Nam",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new City
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Hồ Chí Minh",
+                    Code = "VN-HCM",
+                    Country = "Việt Nam",
+                    Description = "Thành phố lớn nhất Việt Nam",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new City
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Đà Nẵng",
+                    Code = "VN-DN",
+                    Country = "Việt Nam",
+                    Description = "Thành phố du lịch",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new City
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Hải Phòng",
+                    Code = "VN-HP",
+                    Country = "Việt Nam",
+                    Description = "Thành phố cảng quan trọng",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new City
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Cần Thơ",
+                    Code = "VN-CT",
+                    Country = "Việt Nam",
+                    Description = "Trung tâm Đồng bằng sông Cửu Long",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                }
+            };
+
+            context.Cities.AddRange(cities);
+            await context.SaveChangesAsync();
+            
+            hanoiCity = cities[0]; // Lấy Hà Nội
+            
+            Console.WriteLine("✓ Sample cities created");
+        }
+        else
+        {
+            hanoiCity = await context.Cities.FirstOrDefaultAsync(c => c.Code == "VN-HN");
+        }
+
+        // Seed sample addresses
+        if (admin != null && regularUser != null && hanoiCity != null && !await context.Addresses.AnyAsync())
+        {
             var address1 = new Address
             {
                 Id = Guid.NewGuid(),
                 Name = "Hồ Hoàn Kiếm",
                 FullAddress = "Đinh Tiên Hoàng, Hoàn Kiếm, Hà Nội",
-                City = "Hà Nội",
+                CityId = hanoiCity.Id, // Sử dụng CityId thay vì City string
                 Country = "Việt Nam",
                 Type = "Landmark",
                 Category = "Lake",
@@ -77,7 +159,7 @@ public static class DataSeeder
                 Id = Guid.NewGuid(),
                 Name = "Phở Thìn Bờ Hồ",
                 FullAddress = "13 Lò Đúc, Hai Bà Trưng, Hà Nội",
-                City = "Hà Nội",
+                CityId = hanoiCity.Id, // Sử dụng CityId
                 Country = "Việt Nam",
                 Type = "Restaurant",
                 Category = "Vietnamese Restaurant",
@@ -98,7 +180,7 @@ public static class DataSeeder
                 Id = Guid.NewGuid(),
                 Name = "Bảo Tàng Lịch Sử",
                 FullAddress = "1 Tràng Tiền, Hoàn Kiếm, Hà Nội",
-                City = "Hà Nội",
+                CityId = hanoiCity.Id, // Sử dụng CityId
                 Country = "Việt Nam",
                 Type = "Museum",
                 Category = "History Museum",

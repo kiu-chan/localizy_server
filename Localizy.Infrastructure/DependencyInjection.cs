@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<ISettingRepository, SettingRepository>();
         services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IValidationRepository, ValidationRepository>();
+        services.AddScoped<ICityRepository, CityRepository>();
 
         // Services
         services.AddScoped<IJwtService, JwtService>();

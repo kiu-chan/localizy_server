@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Setting> Settings { get; set; }
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Validation> Validations { get; set; }
+    public DbSet<City> Cities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,7 +43,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.DefaultLanguage).HasMaxLength(10);
-
+            
             entity.HasOne(p => p.User)
                   .WithMany(u => u.Projects)
                   .HasForeignKey(p => p.UserId)
@@ -73,18 +74,31 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Value).IsRequired();
             entity.Property(e => e.Category).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(500);
-
+            
             entity.HasIndex(e => e.Key).IsUnique();
             entity.HasIndex(e => e.Category);
         });
 
-        // Configure Address
+        // Configure City
+        modelBuilder.Entity<City>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.Country).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            
+            entity.HasIndex(e => e.Code).IsUnique();
+            entity.HasIndex(e => e.Name);
+            entity.HasIndex(e => e.Country);
+        });
+
+        // Configure Address - CHỈ ĐỊNH NGHĨA MỘT LẦN
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.FullAddress).IsRequired().HasMaxLength(500);
-            entity.Property(e => e.City).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Country).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Category).IsRequired().HasMaxLength(100);
@@ -96,7 +110,13 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.VerificationNotes).HasMaxLength(1000);
             entity.Property(e => e.RejectionReason).HasMaxLength(1000);
 
-            // Relationships
+            // City relationship
+            entity.HasOne(a => a.City)
+                  .WithMany(c => c.Addresses)
+                  .HasForeignKey(a => a.CityId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            // User relationships
             entity.HasOne(a => a.SubmittedByUser)
                   .WithMany()
                   .HasForeignKey(a => a.SubmittedByUserId)
@@ -110,7 +130,7 @@ public class ApplicationDbContext : DbContext
             // Indexes
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.Type);
-            entity.HasIndex(e => e.City);
+            entity.HasIndex(e => e.CityId);
             entity.HasIndex(e => new { e.Latitude, e.Longitude });
         });
 

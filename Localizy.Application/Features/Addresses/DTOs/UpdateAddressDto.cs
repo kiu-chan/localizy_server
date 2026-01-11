@@ -4,8 +4,11 @@ public class UpdateAddressDto
 {
     public string? Name { get; set; }
     public string? Address { get; set; }
-    public string? City { get; set; }
+    
+    // Thay đổi: cho phép update CityId
+    public Guid? CityId { get; set; }
     public string? Country { get; set; }
+    
     public string? Type { get; set; }
     public string? Category { get; set; }
     

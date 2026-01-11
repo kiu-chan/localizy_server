@@ -248,7 +248,12 @@ public class ValidationService : IValidationService
                 Id = validation.Address.Id,
                 Name = validation.Address.Name,
                 Address = validation.Address.FullAddress,
-                City = validation.Address.City,
+                City = validation.Address.City != null ? new ValidationCityDto
+                {
+                    Id = validation.Address.City.Id,
+                    Name = validation.Address.City.Name,
+                    Code = validation.Address.City.Code
+                } : null,
                 Country = validation.Address.Country,
                 Type = validation.Address.Type,
                 Category = validation.Address.Category,

@@ -4,8 +4,11 @@ public class CreateAddressDto
 {
     public string Name { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
+    
+    // Thay đổi: chỉ nhận CityId hoặc City name
+    public Guid? CityId { get; set; }
     public string Country { get; set; } = string.Empty;
+    
     public string Type { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     
