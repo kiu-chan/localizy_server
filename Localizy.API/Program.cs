@@ -20,7 +20,7 @@ var connectionString = $"Server={server};Database={database};User Id={userId};Pa
 builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
 
 // JWT Settings from environment
-builder.Configuration["JwtSettings:Secret"] = Environment. GetEnvironmentVariable("JWT_SECRET") ?? "your-super-secret-key-at-least-32-characters-long-for-security";
+builder.Configuration["JwtSettings:Secret"] = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "your-super-secret-key-at-least-32-characters-long-for-security";
 builder.Configuration["JwtSettings:Issuer"] = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "LocalizyAPI";
 builder.Configuration["JwtSettings:Audience"] = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "LocalizyClient";
 builder.Configuration["JwtSettings:ExpirationInMinutes"] = Environment.GetEnvironmentVariable("JWT_EXPIRATION_MINUTES") ?? "1440";
@@ -31,10 +31,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:5173",  // Vite default port
-                "http://localhost:3000",  // React default port
-                "http://localhost:4200",  // Angular default port
-                "http://localhost:8080"   // Vue default port
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://localhost:4200",
+                "http://localhost:8080"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -43,7 +43,8 @@ builder.Services.AddCors(options =>
 });
 
 // Add services to the container.
-builder. Services.AddControllers();
+builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -65,7 +66,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error seeding data: {ex. Message}");
+        Console.WriteLine($"Error seeding data: {ex.Message}");
     }
 }
 
@@ -77,8 +78,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-// IMPORTANT: UseCors phải đứng trước UseAuthentication và UseAuthorization
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();

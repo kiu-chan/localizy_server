@@ -177,7 +177,8 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<HomeSlide>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.ImageFileName).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.ImagePath).IsRequired().HasMaxLength(500);
             entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
             entity.HasIndex(e => e.Order);
             entity.HasIndex(e => e.IsActive);

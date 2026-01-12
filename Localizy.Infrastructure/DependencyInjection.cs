@@ -31,9 +31,11 @@ public static class DependencyInjection
         services.AddScoped<IValidationRepository, ValidationRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IHomeSlideRepository, HomeSlideRepository>();
+        services.AddScoped<IFileService, FileService>();
 
         // Services
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<Localizy.Infrastructure.Services.IFileService, FileService>();
 
         // JWT Settings
         var jwtSettings = configuration.GetSection("JwtSettings");

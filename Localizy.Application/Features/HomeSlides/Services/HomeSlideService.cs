@@ -31,12 +31,13 @@ public class HomeSlideService : IHomeSlideService
         return slides.Select(MapToDto);
     }
 
-    public async Task<HomeSlideResponseDto> CreateAsync(CreateHomeSlideDto dto)
+    public async Task<HomeSlideResponseDto> CreateAsync(CreateHomeSlideDto dto, string imageFileName, string imagePath)
     {
         var slide = new HomeSlide
         {
             Id = Guid.NewGuid(),
-            ImageUrl = dto.ImageUrl,
+            ImageFileName = imageFileName,
+            ImagePath = imagePath,
             Content = dto.Content,
             Order = dto.Order,
             IsActive = dto.IsActive
@@ -46,13 +47,17 @@ public class HomeSlideService : IHomeSlideService
         return MapToDto(createdSlide);
     }
 
-    public async Task<HomeSlideResponseDto?> UpdateAsync(Guid id, UpdateHomeSlideDto dto)
+    public async Task<HomeSlideResponseDto?> UpdateAsync(Guid id, UpdateHomeSlideDto dto, string? imageFileName, string? imagePath)
     {
         var slide = await _repository.GetByIdAsync(id);
         if (slide == null) return null;
 
-        if (!string.IsNullOrEmpty(dto.ImageUrl))
-            slide.ImageUrl = dto.ImageUrl;
+        // Update image if provided
+        if (!string.IsNullOrEmpty(imageFileName) && !string.IsNullOrEmpty(imagePath))
+        {
+            slide.ImageFileName = imageFileName;
+            slide.ImagePath = imagePath;
+        }
 
         if (!string.IsNullOrEmpty(dto.Content))
             slide.Content = dto.Content;
@@ -76,12 +81,18 @@ public class HomeSlideService : IHomeSlideService
         return true;
     }
 
+    public async Task<string?> GetImagePathByIdAsync(Guid id)
+    {
+        var slide = await _repository.GetByIdAsync(id);
+        return slide?.ImagePath;
+    }
+
     private static HomeSlideResponseDto MapToDto(HomeSlide slide)
     {
         return new HomeSlideResponseDto
         {
             Id = slide.Id,
-            ImageUrl = slide.ImageUrl,
+            ImageUrl = slide.ImagePath,
             Content = slide.Content,
             Order = slide.Order,
             IsActive = slide.IsActive,

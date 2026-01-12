@@ -159,3 +159,5 @@ yarn-error.log
 
 # Migration files backup
 **/Migrations/*.Designer.cs.bak
+
+Localizy.API/wwwroot
