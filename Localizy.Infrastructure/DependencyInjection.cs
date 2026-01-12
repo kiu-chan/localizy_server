@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IValidationRepository, ValidationRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<IHomeSlideRepository, HomeSlideRepository>();
 
         // Services
         services.AddScoped<IJwtService, JwtService>();
