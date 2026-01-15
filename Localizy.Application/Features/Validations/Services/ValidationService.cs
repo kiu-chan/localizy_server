@@ -233,6 +233,120 @@ public class ValidationService : IValidationService
         var updatedValidation = await _validationRepository.UpdateAsync(validation);
         return MapToDto(updatedValidation);
     }
+    public async Task<VerificationRequestResponseDto> CreateVerificationRequestAsync(
+    Guid userId,
+    CreateVerificationRequestDto dto)
+    {
+        // Verify user exists
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            throw new InvalidOperationException("User does not exist");
+        }
+
+        // Verify address exists
+        var address = await _addressRepository.GetByIdAsync(dto.AddressId);
+        if (address == null)
+        {
+            throw new InvalidOperationException("Address does not exist");
+        }
+
+        // Parse enums
+        if (!Enum.TryParse<ValidationRequestType>(dto.RequestType, true, out var requestType))
+        {
+            requestType = ValidationRequestType.NewAddress;
+        }
+
+        if (!Enum.TryParse<ValidationPriority>(dto.Priority, true, out var priority))
+        {
+            priority = ValidationPriority.Medium;
+        }
+
+        // Generate request ID
+        var requestId = await _validationRepository.GenerateRequestIdAsync();
+
+        var validation = new Validation
+        {
+            Id = Guid.NewGuid(),
+            RequestId = requestId,
+            AddressId = dto.AddressId,
+            Status = ValidationStatus.Pending,
+            Priority = priority,
+            RequestType = requestType,
+            SubmittedByUserId = userId,
+            SubmittedDate = DateTime.UtcNow,
+            Notes = dto.Notes,
+
+            // Document info
+            IdType = dto.IdType,
+            PhotosProvided = dto.PhotosProvided,
+            DocumentsProvided = dto.DocumentsProvided,
+            AttachmentsCount = dto.AttachmentsCount,
+
+            // Location info
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
+            LocationVerified = false,
+
+            // Payment info
+            PaymentMethod = dto.PaymentMethod,
+            PaymentAmount = dto.PaymentAmount,
+            PaymentStatus = "Pending",
+
+            // Appointment info
+            AppointmentDate = dto.AppointmentDate,
+            AppointmentTimeSlot = dto.AppointmentTimeSlot,
+
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createdValidation = await _validationRepository.CreateAsync(validation);
+        return MapToVerificationRequestDto(createdValidation);
+    }
+
+    private static VerificationRequestResponseDto MapToVerificationRequestDto(Validation validation)
+    {
+        return new VerificationRequestResponseDto
+        {
+            Id = validation.Id,
+            RequestId = validation.RequestId,
+            Status = validation.Status.ToString(),
+            Priority = validation.Priority.ToString(),
+            Address = new VerificationAddressInfoDto
+            {
+                Id = validation.Address.Id,
+                Name = validation.Address.Name,
+                Address = validation.Address.FullAddress,
+                City = validation.Address.City?.Name ?? string.Empty
+            },
+            Documents = new VerificationDocumentDto
+            {
+                IdType = validation.IdType ?? string.Empty,
+                PhotosProvided = validation.PhotosProvided,
+                DocumentsProvided = validation.DocumentsProvided,
+                AttachmentsCount = validation.AttachmentsCount
+            },
+            Location = new VerificationLocationDto
+            {
+                Latitude = validation.Latitude ?? 0,
+                Longitude = validation.Longitude ?? 0
+            },
+            Payment = new VerificationPaymentDto
+            {
+                Method = validation.PaymentMethod ?? string.Empty,
+                Amount = validation.PaymentAmount ?? 0,
+                Status = validation.PaymentStatus ?? "Pending"
+            },
+            Appointment = validation.AppointmentDate.HasValue ? new VerificationAppointmentDto
+            {
+                Date = validation.AppointmentDate.Value,
+                TimeSlot = validation.AppointmentTimeSlot ?? string.Empty
+            } : null,
+            SubmittedDate = validation.SubmittedDate,
+            ProcessingNotes = validation.ProcessingNotes,
+            CreatedAt = validation.CreatedAt
+        };
+    }
 
     private static ValidationResponseDto MapToDto(Validation validation)
     {

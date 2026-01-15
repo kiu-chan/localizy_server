@@ -6,27 +6,39 @@ namespace Localizy.Infrastructure.Services;
 public interface IFileService
 {
     Task<(string fileName, string filePath)> SaveFileAsync(IFormFile file, string folderName);
-    Task DeleteFileAsync(string fullPath);
+    Task DeleteFileAsync(string filePath);
     string GetFileUrl(string fileName, string folderName);
+    string GetPhysicalPath(string fileName, string folderName);
 }
 
 public class FileService : IFileService
 {
     private readonly IWebHostEnvironment _environment;
     private readonly string _uploadPath;
+    private readonly bool _isAzure;
 
     public FileService(IWebHostEnvironment environment)
     {
         _environment = environment;
         
-        // Get or create wwwroot directory
-        var webRootPath = _environment.WebRootPath;
-        if (string.IsNullOrEmpty(webRootPath))
-        {
-            webRootPath = Path.Combine(_environment.ContentRootPath, "wwwroot");
-        }
+        // Check if running on Azure
+        _isAzure = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
         
-        _uploadPath = Path.Combine(webRootPath, "uploads");
+        if (_isAzure)
+        {
+            // Azure: Use persistent storage
+            _uploadPath = Path.Combine("/home", "uploads");
+        }
+        else
+        {
+            // Local: Use wwwroot
+            var webRootPath = _environment.WebRootPath;
+            if (string.IsNullOrEmpty(webRootPath))
+            {
+                webRootPath = Path.Combine(_environment.ContentRootPath, "wwwroot");
+            }
+            _uploadPath = Path.Combine(webRootPath, "uploads");
+        }
         
         // Create uploads directory if not exists
         if (!Directory.Exists(_uploadPath))
@@ -78,13 +90,15 @@ public class FileService : IFileService
         return (fileName, fileUrl);
     }
 
-    public async Task DeleteFileAsync(string fullPath)
+    public async Task DeleteFileAsync(string filePath)
     {
         await Task.Run(() =>
         {
-            if (File.Exists(fullPath))
+            // Convert URL path to physical path
+            var physicalPath = GetPhysicalPathFromUrl(filePath);
+            if (File.Exists(physicalPath))
             {
-                File.Delete(fullPath);
+                File.Delete(physicalPath);
             }
         });
     }
@@ -92,5 +106,26 @@ public class FileService : IFileService
     public string GetFileUrl(string fileName, string folderName)
     {
         return $"/uploads/{folderName}/{fileName}";
+    }
+
+    public string GetPhysicalPath(string fileName, string folderName)
+    {
+        return Path.Combine(_uploadPath, folderName, fileName);
+    }
+
+    private string GetPhysicalPathFromUrl(string urlPath)
+    {
+        // Convert "/uploads/home-slides/abc.jpg" to physical path
+        var relativePath = urlPath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
+        
+        if (_isAzure)
+        {
+            return Path.Combine("/home", relativePath);
+        }
+        else
+        {
+            var webRootPath = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+            return Path.Combine(webRootPath, relativePath);
+        }
     }
 }

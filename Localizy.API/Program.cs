@@ -3,11 +3,13 @@ using Localizy.Application;
 using Localizy.Infrastructure;
 using Localizy.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load environment variables
-Env.Load();
+// Load environment variables from root directory
+var rootPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), ".."));
+Env.Load(Path.Combine(rootPath, ".env"));
 
 // Build connection string from environment variables
 var server = Environment.GetEnvironmentVariable("DB_SERVER");
@@ -26,25 +28,10 @@ builder.Configuration["JwtSettings:Audience"] = Environment.GetEnvironmentVariab
 builder.Configuration["JwtSettings:ExpirationInMinutes"] = Environment.GetEnvironmentVariable("JWT_EXPIRATION_MINUTES") ?? "1440";
 
 // Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:4200",
-                "http://localhost:8080"
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
+builder.Services.AddCors();
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -71,16 +58,36 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+// Serve static files from wwwroot
 app.UseStaticFiles();
 
-app.UseCors("AllowFrontend");
+// Serve files from /home/uploads on Azure
+var isAzure = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
+if (isAzure)
+{
+    var uploadsPath = Path.Combine("/home", "uploads");
+    if (!Directory.Exists(uploadsPath))
+    {
+        Directory.CreateDirectory(uploadsPath);
+    }
+    
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(uploadsPath),
+        RequestPath = "/uploads"
+    });
+}
+
+// IMPORTANT: UseCors must be before UseAuthentication and UseAuthorization
+app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 app.UseAuthentication();
 app.UseAuthorization();

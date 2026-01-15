@@ -148,6 +148,11 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.NewData).HasMaxLength(4000);
             entity.Property(e => e.ProcessingNotes).HasMaxLength(2000);
             entity.Property(e => e.RejectionReason).HasMaxLength(2000);
+            entity.Property(e => e.IdType).HasMaxLength(50);
+            entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+            entity.Property(e => e.PaymentStatus).HasMaxLength(50);
+            entity.Property(e => e.PaymentAmount).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.AppointmentTimeSlot).HasMaxLength(50);
 
             // Relationships
             entity.HasOne(v => v.Address)

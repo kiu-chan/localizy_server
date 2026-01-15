@@ -107,7 +107,7 @@ public class ValidationsController : ControllerBase
     public async Task<ActionResult<ValidationResponseDto>> GetById(Guid id)
     {
         var validation = await _validationService.GetByIdAsync(id);
-        
+
         if (validation == null)
             return NotFound(new { message = "Không tìm thấy validation request" });
 
@@ -122,7 +122,7 @@ public class ValidationsController : ControllerBase
     public async Task<ActionResult<ValidationResponseDto>> GetByRequestId(string requestId)
     {
         var validation = await _validationService.GetByRequestIdAsync(requestId);
-        
+
         if (validation == null)
             return NotFound(new { message = "Không tìm thấy validation request" });
 
@@ -162,7 +162,7 @@ public class ValidationsController : ControllerBase
         try
         {
             var validation = await _validationService.UpdateAsync(id, dto);
-            
+
             if (validation == null)
                 return NotFound(new { message = "Không tìm thấy validation request" });
 
@@ -182,7 +182,7 @@ public class ValidationsController : ControllerBase
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _validationService.DeleteAsync(id);
-        
+
         if (!result)
             return NotFound(new { message = "Không tìm thấy validation request" });
 
@@ -203,7 +203,7 @@ public class ValidationsController : ControllerBase
         }
 
         var validation = await _validationService.VerifyAsync(id, userId, dto);
-        
+
         if (validation == null)
             return NotFound(new { message = "Không tìm thấy validation request" });
 
@@ -229,10 +229,54 @@ public class ValidationsController : ControllerBase
         }
 
         var validation = await _validationService.RejectAsync(id, userId, dto);
-        
+
         if (validation == null)
             return NotFound(new { message = "Không tìm thấy validation request" });
 
+        return Ok(validation);
+    }
+
+    /// <summary>
+    /// Create verification request for address
+    /// </summary>
+    [HttpPost("verification-request")]
+    public async Task<ActionResult<VerificationRequestResponseDto>> CreateVerificationRequest(
+        [FromBody] CreateVerificationRequestDto dto)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user" });
+            }
+
+            var verificationRequest = await _validationService.CreateVerificationRequestAsync(userId, dto);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = verificationRequest.Id },
+                verificationRequest
+            );
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get verification request by ID
+    /// </summary>
+    [HttpGet("verification-request/{id}")]
+    public async Task<ActionResult<VerificationRequestResponseDto>> GetVerificationRequest(Guid id)
+    {
+        var validation = await _validationService.GetByIdAsync(id);
+
+        if (validation == null)
+            return NotFound(new { message = "Verification request not found" });
+
+        // Map to VerificationRequestResponseDto
+        // You can create a separate method in service for this
         return Ok(validation);
     }
 }

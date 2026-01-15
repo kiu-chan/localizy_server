@@ -5,6 +5,7 @@ using Localizy.Infrastructure.Persistence;
 using Localizy.Infrastructure.Persistence.Repositories;
 using Localizy.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,9 @@ public static class DependencyInjection
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+        // Add HttpContextAccessor
+        services.AddHttpContextAccessor();
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();

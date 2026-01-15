@@ -21,21 +21,22 @@ public class DatabaseTestController : ControllerBase
         try
         {
             var canConnect = await _context.Database.CanConnectAsync();
-            
+
             if (canConnect)
             {
                 var projectCount = await _context.Projects.CountAsync();
                 var translationCount = await _context.Translations.CountAsync();
-                
+
                 return Ok(new
                 {
                     status = "connected",
                     database = _context.Database.GetDbConnection().Database,
                     projectCount,
-                    translationCount
+                    translationCount,
+                    buildNumber = 5
                 });
             }
-            
+
             return BadRequest(new { status = "disconnected" });
         }
         catch (Exception ex)
