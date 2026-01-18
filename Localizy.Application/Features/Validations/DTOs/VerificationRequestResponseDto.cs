@@ -14,6 +14,7 @@ public class VerificationRequestResponseDto
     public VerificationAppointmentDto? Appointment { get; set; }
     
     public DateTime SubmittedDate { get; set; }
+    public string? Notes { get; set; }
     public string? ProcessingNotes { get; set; }
     
     public DateTime CreatedAt { get; set; }
@@ -33,6 +34,8 @@ public class VerificationDocumentDto
     public bool PhotosProvided { get; set; }
     public bool DocumentsProvided { get; set; }
     public int AttachmentsCount { get; set; }
+    public string? IdDocumentUrl { get; set; }
+    public string? AddressProofUrl { get; set; }
 }
 
 public class VerificationLocationDto
@@ -45,7 +48,7 @@ public class VerificationPaymentDto
 {
     public string Method { get; set; } = string.Empty;
     public decimal Amount { get; set; }
-    public string Status { get; set; } = "Pending"; // Pending, Completed, Failed
+    public string Status { get; set; } = "Pending";
 }
 
 public class VerificationAppointmentDto

@@ -78,12 +78,12 @@ public class ValidationRepository : IValidationRepository
     public async Task<IEnumerable<Validation>> SearchAsync(string searchTerm)
     {
         var lowerSearchTerm = searchTerm.ToLower();
-        
+
         return await _context.Validations
             .Include(v => v.Address)
             .Include(v => v.SubmittedByUser)
             .Include(v => v.ProcessedByUser)
-            .Where(v => 
+            .Where(v =>
                 v.RequestId.ToLower().Contains(lowerSearchTerm) ||
                 v.Address.Name.ToLower().Contains(lowerSearchTerm) ||
                 v.Address.FullAddress.ToLower().Contains(lowerSearchTerm) ||
@@ -98,15 +98,18 @@ public class ValidationRepository : IValidationRepository
     {
         _context.Validations.Add(validation);
         await _context.SaveChangesAsync();
-        
+
         // Load navigation properties
-        await _context.Entry(validation)
-            .Reference(v => v.Address)
-            .LoadAsync();
+        if (validation.AddressId.HasValue)
+        {
+            await _context.Entry(validation)
+                .Reference(v => v.Address)
+                .LoadAsync();
+        }
         await _context.Entry(validation)
             .Reference(v => v.SubmittedByUser)
             .LoadAsync();
-            
+
         return validation;
     }
 
@@ -114,7 +117,7 @@ public class ValidationRepository : IValidationRepository
     {
         _context.Validations.Update(validation);
         await _context.SaveChangesAsync();
-        
+
         // Reload navigation properties
         await _context.Entry(validation)
             .Reference(v => v.Address)
@@ -125,7 +128,7 @@ public class ValidationRepository : IValidationRepository
         await _context.Entry(validation)
             .Reference(v => v.ProcessedByUser)
             .LoadAsync();
-            
+
         return validation;
     }
 

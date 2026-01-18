@@ -140,9 +140,6 @@ public class ApplicationDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.RequestId).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Status).HasConversion<string>();
-            entity.Property(e => e.Priority).HasConversion<string>();
-            entity.Property(e => e.RequestType).HasConversion<string>();
             entity.Property(e => e.Notes).HasMaxLength(2000);
             entity.Property(e => e.OldData).HasMaxLength(4000);
             entity.Property(e => e.NewData).HasMaxLength(4000);
@@ -151,30 +148,36 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.IdType).HasMaxLength(50);
             entity.Property(e => e.PaymentMethod).HasMaxLength(50);
             entity.Property(e => e.PaymentStatus).HasMaxLength(50);
-            entity.Property(e => e.PaymentAmount).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.AppointmentTimeSlot).HasMaxLength(50);
+            entity.Property(e => e.AppointmentTimeSlot).HasMaxLength(100);
+            entity.Property(e => e.IdDocumentFileName).HasMaxLength(500);
+            entity.Property(e => e.IdDocumentPath).HasMaxLength(1000);
+            entity.Property(e => e.AddressProofFileName).HasMaxLength(500);
+            entity.Property(e => e.AddressProofPath).HasMaxLength(1000);
+            entity.Property(e => e.Status).HasConversion<string>();
+            entity.Property(e => e.Priority).HasConversion<string>();
+            entity.Property(e => e.RequestType).HasConversion<string>();
 
-            // Relationships
+            entity.HasIndex(e => e.RequestId).IsUnique();
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.Priority);
+            entity.HasIndex(e => e.SubmittedDate);
+
             entity.HasOne(v => v.Address)
                   .WithMany()
                   .HasForeignKey(v => v.AddressId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .IsRequired(false);
 
             entity.HasOne(v => v.SubmittedByUser)
                   .WithMany()
                   .HasForeignKey(v => v.SubmittedByUserId)
-                  .OnDelete(DeleteBehavior.Restrict);
+                  .OnDelete(DeleteBehavior.Restrict)
+                  .IsRequired();
 
             entity.HasOne(v => v.ProcessedByUser)
                   .WithMany()
                   .HasForeignKey(v => v.ProcessedByUserId)
                   .OnDelete(DeleteBehavior.Restrict);
-
-            // Indexes
-            entity.HasIndex(e => e.RequestId).IsUnique();
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.Priority);
-            entity.HasIndex(e => e.SubmittedDate);
         });
 
 

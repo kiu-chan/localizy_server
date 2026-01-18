@@ -17,5 +17,12 @@ public interface IValidationService
     Task<bool> DeleteAsync(Guid id);
     Task<ValidationResponseDto?> VerifyAsync(Guid id, Guid verifiedByUserId, VerifyValidationDto dto);
     Task<ValidationResponseDto?> RejectAsync(Guid id, Guid rejectedByUserId, RejectValidationDto dto);
-    Task<VerificationRequestResponseDto> CreateVerificationRequestAsync(Guid userId, CreateVerificationRequestDto dto);
+    Task<VerificationRequestResponseDto> CreateVerificationRequestAsync(
+        Guid userId, 
+        CreateVerificationRequestDto dto,
+        string? idDocumentFileName,
+        string? idDocumentPath,
+        string? addressProofFileName,
+        string? addressProofPath);
+    Task<VerificationRequestResponseDto?> GetVerificationRequestByIdAsync(Guid id);
 }

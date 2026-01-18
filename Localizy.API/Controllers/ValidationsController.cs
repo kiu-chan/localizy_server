@@ -1,5 +1,6 @@
 using Localizy.Application.Features.Validations.DTOs;
 using Localizy.Application.Features.Validations.Services;
+using Localizy.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,14 +13,16 @@ namespace Localizy.API.Controllers;
 public class ValidationsController : ControllerBase
 {
     private readonly IValidationService _validationService;
+    private readonly IFileService _fileService;
 
-    public ValidationsController(IValidationService validationService)
+    public ValidationsController(IValidationService validationService, IFileService fileService)
     {
         _validationService = validationService;
+        _fileService = fileService;
     }
 
     /// <summary>
-    /// Lấy thống kê validations (Admin only)
+    /// Get validation statistics (Admin only)
     /// </summary>
     [HttpGet("stats")]
     [Authorize(Roles = "Admin")]
@@ -30,7 +33,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Tìm kiếm validations
+    /// Search validations
     /// </summary>
     [HttpGet("search")]
     [Authorize(Roles = "Admin")]
@@ -41,7 +44,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lọc validations theo status
+    /// Filter validations by status
     /// </summary>
     [HttpGet("filter/status/{status}")]
     [Authorize(Roles = "Admin")]
@@ -52,7 +55,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lọc validations theo priority
+    /// Filter validations by priority
     /// </summary>
     [HttpGet("filter/priority/{priority}")]
     [Authorize(Roles = "Admin")]
@@ -63,7 +66,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy validations của user cụ thể
+    /// Get validations by user ID
     /// </summary>
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<IEnumerable<ValidationResponseDto>>> GetByUser(Guid userId)
@@ -73,7 +76,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy validations của user hiện tại
+    /// Get validations of current user
     /// </summary>
     [HttpGet("my-validations")]
     public async Task<ActionResult<IEnumerable<ValidationResponseDto>>> GetMyValidations()
@@ -81,7 +84,7 @@ public class ValidationsController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new { message = "User không hợp lệ" });
+            return Unauthorized(new { message = "Invalid user" });
         }
 
         var validations = await _validationService.GetByUserAsync(userId);
@@ -89,7 +92,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy tất cả validations (Admin only)
+    /// Get all validations (Admin only)
     /// </summary>
     [HttpGet]
     [Authorize(Roles = "Admin")]
@@ -100,7 +103,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy validation theo ID
+    /// Get validation by ID
     /// </summary>
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin")]
@@ -109,13 +112,13 @@ public class ValidationsController : ControllerBase
         var validation = await _validationService.GetByIdAsync(id);
 
         if (validation == null)
-            return NotFound(new { message = "Không tìm thấy validation request" });
+            return NotFound(new { message = "Validation request not found" });
 
         return Ok(validation);
     }
 
     /// <summary>
-    /// Lấy validation theo Request ID
+    /// Get validation by Request ID
     /// </summary>
     [HttpGet("request/{requestId}")]
     [Authorize(Roles = "Admin")]
@@ -124,13 +127,13 @@ public class ValidationsController : ControllerBase
         var validation = await _validationService.GetByRequestIdAsync(requestId);
 
         if (validation == null)
-            return NotFound(new { message = "Không tìm thấy validation request" });
+            return NotFound(new { message = "Validation request not found" });
 
         return Ok(validation);
     }
 
     /// <summary>
-    /// Tạo validation request mới
+    /// Create validation request
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<ValidationResponseDto>> Create([FromBody] CreateValidationDto dto)
@@ -140,7 +143,7 @@ public class ValidationsController : ControllerBase
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             {
-                return Unauthorized(new { message = "User không hợp lệ" });
+                return Unauthorized(new { message = "Invalid user" });
             }
 
             var validation = await _validationService.CreateAsync(userId, dto);
@@ -153,7 +156,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Cập nhật validation request
+    /// Update validation request
     /// </summary>
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
@@ -164,7 +167,7 @@ public class ValidationsController : ControllerBase
             var validation = await _validationService.UpdateAsync(id, dto);
 
             if (validation == null)
-                return NotFound(new { message = "Không tìm thấy validation request" });
+                return NotFound(new { message = "Validation request not found" });
 
             return Ok(validation);
         }
@@ -175,7 +178,7 @@ public class ValidationsController : ControllerBase
     }
 
     /// <summary>
-    /// Xóa validation request (Admin only)
+    /// Delete validation request (Admin only)
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
@@ -184,7 +187,7 @@ public class ValidationsController : ControllerBase
         var result = await _validationService.DeleteAsync(id);
 
         if (!result)
-            return NotFound(new { message = "Không tìm thấy validation request" });
+            return NotFound(new { message = "Validation request not found" });
 
         return NoContent();
     }
@@ -199,13 +202,13 @@ public class ValidationsController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new { message = "User không hợp lệ" });
+            return Unauthorized(new { message = "Invalid user" });
         }
 
         var validation = await _validationService.VerifyAsync(id, userId, dto);
 
         if (validation == null)
-            return NotFound(new { message = "Không tìm thấy validation request" });
+            return NotFound(new { message = "Validation request not found" });
 
         return Ok(validation);
     }
@@ -219,29 +222,44 @@ public class ValidationsController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(dto.Reason))
         {
-            return BadRequest(new { message = "Lý do từ chối không được để trống" });
+            return BadRequest(new { message = "Rejection reason is required" });
         }
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new { message = "User không hợp lệ" });
+            return Unauthorized(new { message = "Invalid user" });
         }
 
         var validation = await _validationService.RejectAsync(id, userId, dto);
 
         if (validation == null)
-            return NotFound(new { message = "Không tìm thấy validation request" });
+            return NotFound(new { message = "Validation request not found" });
 
         return Ok(validation);
     }
 
     /// <summary>
-    /// Create verification request for address
+    /// Create verification request for address with document upload
     /// </summary>
     [HttpPost("verification-request")]
+    [Consumes("multipart/form-data")]
     public async Task<ActionResult<VerificationRequestResponseDto>> CreateVerificationRequest(
-        [FromBody] CreateVerificationRequestDto dto)
+        [FromForm] string? addressId,
+        [FromForm] string requestType = "NewAddress",
+        [FromForm] string priority = "Medium",
+        [FromForm] string idType = "CMND",
+        [FromForm] bool photosProvided = false,
+        [FromForm] bool documentsProvided = false,
+        [FromForm] int attachmentsCount = 0,
+        [FromForm] double latitude = 0,
+        [FromForm] double longitude = 0,
+        [FromForm] string paymentMethod = "",
+        [FromForm] decimal paymentAmount = 100000,
+        [FromForm] DateTime? appointmentDate = null,
+        [FromForm] string? appointmentTimeSlot = null,
+        [FromForm] IFormFile? idDocument = null,
+        [FromForm] IFormFile? addressProof = null)
     {
         try
         {
@@ -251,9 +269,48 @@ public class ValidationsController : ControllerBase
                 return Unauthorized(new { message = "Invalid user" });
             }
 
-            var verificationRequest = await _validationService.CreateVerificationRequestAsync(userId, dto);
+            string? idDocumentFileName = null;
+            string? idDocumentPath = null;
+            string? addressProofFileName = null;
+            string? addressProofPath = null;
+
+            if (idDocument != null && idDocument.Length > 0)
+            {
+                (idDocumentFileName, idDocumentPath) = await _fileService.SaveFileAsync(idDocument, "verifications");
+            }
+
+            if (addressProof != null && addressProof.Length > 0)
+            {
+                (addressProofFileName, addressProofPath) = await _fileService.SaveFileAsync(addressProof, "verifications");
+            }
+
+            var dto = new CreateVerificationRequestDto
+            {
+                AddressId = string.IsNullOrEmpty(addressId) ? null : Guid.Parse(addressId),
+                RequestType = requestType,
+                Priority = priority,
+                IdType = idType,
+                PhotosProvided = photosProvided || idDocument != null,
+                DocumentsProvided = documentsProvided || addressProof != null,
+                AttachmentsCount = attachmentsCount,
+                Latitude = latitude,
+                Longitude = longitude,
+                PaymentMethod = paymentMethod,
+                PaymentAmount = paymentAmount,
+                AppointmentDate = appointmentDate,
+                AppointmentTimeSlot = appointmentTimeSlot
+            };
+
+            var verificationRequest = await _validationService.CreateVerificationRequestAsync(
+                userId,
+                dto,
+                idDocumentFileName,
+                idDocumentPath,
+                addressProofFileName,
+                addressProofPath);
+
             return CreatedAtAction(
-                nameof(GetById),
+                nameof(GetVerificationRequest),
                 new { id = verificationRequest.Id },
                 verificationRequest
             );
@@ -270,13 +327,11 @@ public class ValidationsController : ControllerBase
     [HttpGet("verification-request/{id}")]
     public async Task<ActionResult<VerificationRequestResponseDto>> GetVerificationRequest(Guid id)
     {
-        var validation = await _validationService.GetByIdAsync(id);
+        var verificationRequest = await _validationService.GetVerificationRequestByIdAsync(id);
 
-        if (validation == null)
+        if (verificationRequest == null)
             return NotFound(new { message = "Verification request not found" });
 
-        // Map to VerificationRequestResponseDto
-        // You can create a separate method in service for this
-        return Ok(validation);
+        return Ok(verificationRequest);
     }
 }

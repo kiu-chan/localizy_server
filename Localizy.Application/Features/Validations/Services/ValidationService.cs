@@ -96,21 +96,18 @@ public class ValidationService : IValidationService
 
     public async Task<ValidationResponseDto> CreateAsync(Guid userId, CreateValidationDto dto)
     {
-        // Verify user exists
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
-            throw new InvalidOperationException("User không tồn tại");
+            throw new InvalidOperationException("User does not exist");
         }
 
-        // Verify address exists
         var address = await _addressRepository.GetByIdAsync(dto.AddressId);
         if (address == null)
         {
-            throw new InvalidOperationException("Address không tồn tại");
+            throw new InvalidOperationException("Address does not exist");
         }
 
-        // Parse enums
         if (!Enum.TryParse<ValidationRequestType>(dto.RequestType, true, out var requestType))
         {
             requestType = ValidationRequestType.NewAddress;
@@ -121,7 +118,6 @@ public class ValidationService : IValidationService
             priority = ValidationPriority.Medium;
         }
 
-        // Generate request ID
         var requestId = await _validationRepository.GenerateRequestIdAsync();
 
         var validation = new Validation
@@ -195,14 +191,16 @@ public class ValidationService : IValidationService
         validation.ProcessedDate = DateTime.UtcNow;
         validation.ProcessingNotes = dto.Notes;
 
-        // Also update the address status
-        var address = await _addressRepository.GetByIdAsync(validation.AddressId);
-        if (address != null)
+        if (validation.AddressId.HasValue)
         {
-            address.Status = AddressStatus.Verified;
-            address.VerifiedByUserId = verifiedByUserId;
-            address.VerifiedDate = DateTime.UtcNow;
-            await _addressRepository.UpdateAsync(address);
+            var address = await _addressRepository.GetByIdAsync(validation.AddressId.Value);
+            if (address != null)
+            {
+                address.Status = AddressStatus.Verified;
+                address.VerifiedByUserId = verifiedByUserId;
+                address.VerifiedDate = DateTime.UtcNow;
+                await _addressRepository.UpdateAsync(address);
+            }
         }
 
         var updatedValidation = await _validationRepository.UpdateAsync(validation);
@@ -219,39 +217,50 @@ public class ValidationService : IValidationService
         validation.ProcessedDate = DateTime.UtcNow;
         validation.RejectionReason = dto.Reason;
 
-        // Also update the address status
-        var address = await _addressRepository.GetByIdAsync(validation.AddressId);
-        if (address != null)
+        if (validation.AddressId.HasValue)
         {
-            address.Status = AddressStatus.Rejected;
-            address.VerifiedByUserId = rejectedByUserId;
-            address.VerifiedDate = DateTime.UtcNow;
-            address.RejectionReason = dto.Reason;
-            await _addressRepository.UpdateAsync(address);
+            var address = await _addressRepository.GetByIdAsync(validation.AddressId.Value);
+            if (address != null)
+            {
+                address.Status = AddressStatus.Rejected;
+                address.VerifiedByUserId = rejectedByUserId;
+                address.VerifiedDate = DateTime.UtcNow;
+                address.RejectionReason = dto.Reason;
+                await _addressRepository.UpdateAsync(address);
+            }
         }
 
         var updatedValidation = await _validationRepository.UpdateAsync(validation);
         return MapToDto(updatedValidation);
     }
+
     public async Task<VerificationRequestResponseDto> CreateVerificationRequestAsync(
-    Guid userId,
-    CreateVerificationRequestDto dto)
+        Guid userId,
+        CreateVerificationRequestDto dto,
+        string? idDocumentFileName,
+        string? idDocumentPath,
+        string? addressProofFileName,
+        string? addressProofPath)
     {
-        // Verify user exists
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
         {
             throw new InvalidOperationException("User does not exist");
         }
 
-        // Verify address exists
-        var address = await _addressRepository.GetByIdAsync(dto.AddressId);
-        if (address == null)
+        Address? address = null;
+        Guid? addressId = null;
+
+        if (dto.AddressId.HasValue && dto.AddressId.Value != Guid.Empty)
         {
-            throw new InvalidOperationException("Address does not exist");
+            address = await _addressRepository.GetByIdAsync(dto.AddressId.Value);
+            if (address == null)
+            {
+                throw new InvalidOperationException("Address does not exist");
+            }
+            addressId = dto.AddressId.Value;
         }
 
-        // Parse enums
         if (!Enum.TryParse<ValidationRequestType>(dto.RequestType, true, out var requestType))
         {
             requestType = ValidationRequestType.NewAddress;
@@ -262,69 +271,75 @@ public class ValidationService : IValidationService
             priority = ValidationPriority.Medium;
         }
 
-        // Generate request ID
         var requestId = await _validationRepository.GenerateRequestIdAsync();
 
         var validation = new Validation
         {
             Id = Guid.NewGuid(),
             RequestId = requestId,
-            AddressId = dto.AddressId,
+            AddressId = addressId,
             Status = ValidationStatus.Pending,
             Priority = priority,
             RequestType = requestType,
             SubmittedByUserId = userId,
             SubmittedDate = DateTime.UtcNow,
-            Notes = dto.Notes,
-
-            // Document info
+            Notes = "New address verification request",
             IdType = dto.IdType,
             PhotosProvided = dto.PhotosProvided,
             DocumentsProvided = dto.DocumentsProvided,
             AttachmentsCount = dto.AttachmentsCount,
-
-            // Location info
             Latitude = dto.Latitude,
             Longitude = dto.Longitude,
             LocationVerified = false,
-
-            // Payment info
             PaymentMethod = dto.PaymentMethod,
             PaymentAmount = dto.PaymentAmount,
             PaymentStatus = "Pending",
-
-            // Appointment info
             AppointmentDate = dto.AppointmentDate,
             AppointmentTimeSlot = dto.AppointmentTimeSlot,
-
+            IdDocumentFileName = idDocumentFileName,
+            IdDocumentPath = idDocumentPath,
+            AddressProofFileName = addressProofFileName,
+            AddressProofPath = addressProofPath,
             CreatedAt = DateTime.UtcNow
         };
 
         var createdValidation = await _validationRepository.CreateAsync(validation);
-        return MapToVerificationRequestDto(createdValidation);
+        return MapToVerificationRequestDto(createdValidation, address);
     }
 
-    private static VerificationRequestResponseDto MapToVerificationRequestDto(Validation validation)
+    public async Task<VerificationRequestResponseDto?> GetVerificationRequestByIdAsync(Guid id)
     {
+        var validation = await _validationRepository.GetByIdAsync(id);
+        if (validation == null) return null;
+
+        return MapToVerificationRequestDto(validation, validation.Address);
+    }
+
+    private static VerificationRequestResponseDto MapToVerificationRequestDto(Validation validation, Address? address = null)
+    {
+        var addressInfo = address ?? validation.Address;
+
         return new VerificationRequestResponseDto
         {
             Id = validation.Id,
             RequestId = validation.RequestId,
             Status = validation.Status.ToString(),
             Priority = validation.Priority.ToString(),
-            Address = new VerificationAddressInfoDto
+            Address = addressInfo != null ? new VerificationAddressInfoDto
             {
-                Id = validation.Address.Id,
-                Name = validation.Address.Name,
-                Address = validation.Address.FullAddress,
-                City = validation.Address.City?.Name ?? string.Empty
-            },
+                Id = addressInfo.Id,
+                Name = addressInfo.Name,
+                Address = addressInfo.FullAddress,
+                City = addressInfo.City?.Name ?? string.Empty
+            } : new VerificationAddressInfoDto(),
             Documents = new VerificationDocumentDto
             {
                 IdType = validation.IdType ?? string.Empty,
                 PhotosProvided = validation.PhotosProvided,
                 DocumentsProvided = validation.DocumentsProvided,
-                AttachmentsCount = validation.AttachmentsCount
+                AttachmentsCount = validation.AttachmentsCount,
+                IdDocumentUrl = validation.IdDocumentPath,
+                AddressProofUrl = validation.AddressProofPath
             },
             Location = new VerificationLocationDto
             {
@@ -343,6 +358,7 @@ public class ValidationService : IValidationService
                 TimeSlot = validation.AppointmentTimeSlot ?? string.Empty
             } : null,
             SubmittedDate = validation.SubmittedDate,
+            Notes = validation.Notes,
             ProcessingNotes = validation.ProcessingNotes,
             CreatedAt = validation.CreatedAt
         };
@@ -357,7 +373,7 @@ public class ValidationService : IValidationService
             Status = validation.Status.ToString(),
             Priority = validation.Priority.ToString(),
             RequestType = validation.RequestType.ToString(),
-            Address = new ValidationAddressDto
+            Address = validation.Address != null ? new ValidationAddressDto
             {
                 Id = validation.Address.Id,
                 Name = validation.Address.Name,
@@ -376,12 +392,12 @@ public class ValidationService : IValidationService
                     Lat = validation.Address.Latitude,
                     Lng = validation.Address.Longitude
                 }
-            },
+            } : new ValidationAddressDto(),
             SubmittedBy = new ValidationSubmitterDto
             {
                 UserId = validation.SubmittedByUserId,
-                Name = validation.SubmittedByUser.FullName,
-                Email = validation.SubmittedByUser.Email
+                Name = validation.SubmittedByUser?.FullName ?? string.Empty,
+                Email = validation.SubmittedByUser?.Email ?? string.Empty
             },
             SubmittedDate = validation.SubmittedDate,
             Notes = validation.Notes,
@@ -399,13 +415,11 @@ public class ValidationService : IValidationService
                 LocationVerified = validation.LocationVerified
             },
             AttachmentsCount = validation.AttachmentsCount,
-            ProcessedBy = validation.ProcessedByUser != null
-                ? new ValidationProcessorDto
-                {
-                    UserId = validation.ProcessedByUser.Id,
-                    Name = validation.ProcessedByUser.FullName
-                }
-                : null,
+            ProcessedBy = validation.ProcessedByUser != null ? new ValidationProcessorDto
+            {
+                UserId = validation.ProcessedByUserId!.Value,
+                Name = validation.ProcessedByUser.FullName
+            } : null,
             ProcessedDate = validation.ProcessedDate,
             ProcessingNotes = validation.ProcessingNotes,
             RejectionReason = validation.RejectionReason,
