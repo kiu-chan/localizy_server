@@ -18,7 +18,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy thống kê addresses
+    /// Get address statistics
     /// </summary>
     [HttpGet("stats")]
     [Authorize(Roles = "Admin")]
@@ -29,7 +29,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Tìm kiếm addresses
+    /// Search addresses
     /// </summary>
     [HttpGet("search")]
     public async Task<ActionResult<IEnumerable<AddressResponseDto>>> Search([FromQuery] string searchTerm)
@@ -39,7 +39,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lọc addresses theo status
+    /// Filter addresses by status
     /// </summary>
     [HttpGet("filter/status/{status}")]
     public async Task<ActionResult<IEnumerable<AddressResponseDto>>> FilterByStatus(string status)
@@ -49,7 +49,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lọc addresses theo type
+    /// Filter addresses by type
     /// </summary>
     [HttpGet("filter/type/{type}")]
     public async Task<ActionResult<IEnumerable<AddressResponseDto>>> FilterByType(string type)
@@ -59,7 +59,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy addresses của user
+    /// Get addresses by user
     /// </summary>
     [HttpGet("user/{userId}")]
     [Authorize]
@@ -70,7 +70,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy addresses của user hiện tại
+    /// Get current user's addresses
     /// </summary>
     [HttpGet("my-addresses")]
     [Authorize]
@@ -79,7 +79,7 @@ public class AddressesController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new { message = "User không hợp lệ" });
+            return Unauthorized(new { message = "Invalid user" });
         }
 
         var addresses = await _addressService.GetByUserAsync(userId);
@@ -87,7 +87,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy tất cả addresses
+    /// Get all addresses
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AddressResponseDto>>> GetAll()
@@ -97,7 +97,31 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy address theo ID
+    /// Get all addresses with only id and coordinates
+    /// </summary>
+    [HttpGet("coordinates")]
+    public async Task<ActionResult<IEnumerable<AddressCoordinateDto>>> GetAllCoordinates()
+    {
+        var coordinates = await _addressService.GetAllCoordinatesAsync();
+        return Ok(coordinates);
+    }
+
+    /// <summary>
+    /// Get address detail by id
+    /// </summary>
+    [HttpGet("detail/{id}")]
+    public async Task<ActionResult<AddressResponseDto>> GetDetailById(Guid id)
+    {
+        var address = await _addressService.GetDetailByIdAsync(id);
+        
+        if (address == null)
+            return NotFound(new { message = "Address not found" });
+
+        return Ok(address);
+    }
+
+    /// <summary>
+    /// Get address by ID
     /// </summary>
     [HttpGet("{id}")]
     public async Task<ActionResult<AddressResponseDto>> GetById(Guid id)
@@ -105,7 +129,7 @@ public class AddressesController : ControllerBase
         var address = await _addressService.GetByIdAsync(id);
         
         if (address == null)
-            return NotFound(new { message = "Không tìm thấy address" });
+            return NotFound(new { message = "Address not found" });
 
         // Increment views
         await _addressService.IncrementViewsAsync(id);
@@ -114,7 +138,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Tạo address mới
+    /// Create new address
     /// </summary>
     [HttpPost]
     [Authorize]
@@ -125,7 +149,7 @@ public class AddressesController : ControllerBase
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             {
-                return Unauthorized(new { message = "User không hợp lệ" });
+                return Unauthorized(new { message = "Invalid user" });
             }
 
             var address = await _addressService.CreateAsync(userId, dto);
@@ -138,7 +162,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Cập nhật address
+    /// Update address
     /// </summary>
     [HttpPut("{id}")]
     [Authorize]
@@ -149,7 +173,7 @@ public class AddressesController : ControllerBase
             var address = await _addressService.UpdateAsync(id, dto);
             
             if (address == null)
-                return NotFound(new { message = "Không tìm thấy address" });
+                return NotFound(new { message = "Address not found" });
 
             return Ok(address);
         }
@@ -160,7 +184,7 @@ public class AddressesController : ControllerBase
     }
 
     /// <summary>
-    /// Xóa address
+    /// Delete address
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
@@ -169,7 +193,7 @@ public class AddressesController : ControllerBase
         var result = await _addressService.DeleteAsync(id);
         
         if (!result)
-            return NotFound(new { message = "Không tìm thấy address" });
+            return NotFound(new { message = "Address not found" });
 
         return NoContent();
     }
@@ -184,13 +208,13 @@ public class AddressesController : ControllerBase
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new { message = "User không hợp lệ" });
+            return Unauthorized(new { message = "Invalid user" });
         }
 
         var address = await _addressService.VerifyAsync(id, userId, dto);
         
         if (address == null)
-            return NotFound(new { message = "Không tìm thấy address" });
+            return NotFound(new { message = "Address not found" });
 
         return Ok(address);
     }
@@ -204,19 +228,19 @@ public class AddressesController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(dto.Reason))
         {
-            return BadRequest(new { message = "Lý do từ chối không được để trống" });
+            return BadRequest(new { message = "Rejection reason is required" });
         }
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
         {
-            return Unauthorized(new { message = "User không hợp lệ" });
+            return Unauthorized(new { message = "Invalid user" });
         }
 
         var address = await _addressService.RejectAsync(id, userId, dto);
         
         if (address == null)
-            return NotFound(new { message = "Không tìm thấy address" });
+            return NotFound(new { message = "Address not found" });
 
         return Ok(address);
     }

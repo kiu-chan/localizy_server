@@ -203,6 +203,26 @@ public class AddressService : IAddressService
         }
     }
 
+    public async Task<IEnumerable<AddressCoordinateDto>> GetAllCoordinatesAsync()
+    {
+        var coordinates = await _addressRepository.GetAllCoordinatesAsync();
+        return coordinates.Select(c => new AddressCoordinateDto
+        {
+            Id = c.Id,
+            Coordinates = new CoordinatesDto
+            {
+                Lat = c.Latitude,
+                Lng = c.Longitude
+            }
+        });
+    }
+
+    public async Task<AddressResponseDto?> GetDetailByIdAsync(Guid id)
+    {
+        var address = await _addressRepository.GetByIdAsync(id);
+        return address == null ? null : MapToDto(address);
+    }
+
     private static AddressResponseDto MapToDto(Address address)
     {
         return new AddressResponseDto

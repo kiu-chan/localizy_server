@@ -18,4 +18,5 @@ public interface IAddressRepository
     Task<int> CountByStatusAsync(AddressStatus status);
     Task<int> GetTotalViewsAsync();
     Task<double> GetAverageRatingAsync();
+    Task<IEnumerable<(Guid Id, double Latitude, double Longitude)>> GetAllCoordinatesAsync();
 }

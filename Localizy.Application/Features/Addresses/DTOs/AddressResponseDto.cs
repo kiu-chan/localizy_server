@@ -64,3 +64,9 @@ public class VerifierDto
     public Guid UserId { get; set; }
     public string Name { get; set; } = string.Empty;
 }
+
+public class AddressCoordinateDto
+{
+    public Guid Id { get; set; }
+    public CoordinatesDto Coordinates { get; set; } = new();
+}

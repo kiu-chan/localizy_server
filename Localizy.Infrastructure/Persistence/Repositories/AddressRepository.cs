@@ -69,12 +69,12 @@ public class AddressRepository : IAddressRepository
     public async Task<IEnumerable<Address>> SearchAsync(string searchTerm)
     {
         var lowerSearchTerm = searchTerm.ToLower();
-        
+
         return await _context.Addresses
             .Include(a => a.SubmittedByUser)
             .Include(a => a.VerifiedByUser)
             .Include(a => a.City)
-            .Where(a => 
+            .Where(a =>
                 a.Name.ToLower().Contains(lowerSearchTerm) ||
                 a.FullAddress.ToLower().Contains(lowerSearchTerm) ||
                 a.Country.ToLower().Contains(lowerSearchTerm) ||
@@ -88,19 +88,19 @@ public class AddressRepository : IAddressRepository
     {
         _context.Addresses.Add(address);
         await _context.SaveChangesAsync();
-        
+
         // Load navigation properties
         await _context.Entry(address)
             .Reference(a => a.SubmittedByUser)
             .LoadAsync();
-        
+
         if (address.CityId.HasValue)
         {
             await _context.Entry(address)
                 .Reference(a => a.City)
                 .LoadAsync();
         }
-            
+
         return address;
     }
 
@@ -108,7 +108,7 @@ public class AddressRepository : IAddressRepository
     {
         _context.Addresses.Update(address);
         await _context.SaveChangesAsync();
-        
+
         // Reload navigation properties
         await _context.Entry(address)
             .Reference(a => a.SubmittedByUser)
@@ -116,14 +116,14 @@ public class AddressRepository : IAddressRepository
         await _context.Entry(address)
             .Reference(a => a.VerifiedByUser)
             .LoadAsync();
-        
+
         if (address.CityId.HasValue)
         {
             await _context.Entry(address)
                 .Reference(a => a.City)
                 .LoadAsync();
         }
-            
+
         return address;
     }
 
@@ -156,5 +156,12 @@ public class AddressRepository : IAddressRepository
     {
         var addresses = await _context.Addresses.Where(a => a.Rating > 0).ToListAsync();
         return addresses.Any() ? addresses.Average(a => a.Rating) : 0;
+    }
+
+    public async Task<IEnumerable<(Guid Id, double Latitude, double Longitude)>> GetAllCoordinatesAsync()
+    {
+        return await _context.Addresses
+            .Select(a => new ValueTuple<Guid, double, double>(a.Id, a.Latitude, a.Longitude))
+            .ToListAsync();
     }
 }

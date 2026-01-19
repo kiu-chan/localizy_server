@@ -17,4 +17,6 @@ public interface IAddressService
     Task<AddressResponseDto?> VerifyAsync(Guid id, Guid verifiedByUserId, VerifyAddressDto dto);
     Task<AddressResponseDto?> RejectAsync(Guid id, Guid rejectedByUserId, RejectAddressDto dto);
     Task IncrementViewsAsync(Guid id);
+    Task<IEnumerable<AddressCoordinateDto>> GetAllCoordinatesAsync();
+    Task<AddressResponseDto?> GetDetailByIdAsync(Guid id);
 }

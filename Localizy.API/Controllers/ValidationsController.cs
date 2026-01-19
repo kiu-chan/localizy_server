@@ -245,21 +245,7 @@ public class ValidationsController : ControllerBase
     [HttpPost("verification-request")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<VerificationRequestResponseDto>> CreateVerificationRequest(
-        [FromForm] string? addressId,
-        [FromForm] string requestType = "NewAddress",
-        [FromForm] string priority = "Medium",
-        [FromForm] string idType = "CMND",
-        [FromForm] bool photosProvided = false,
-        [FromForm] bool documentsProvided = false,
-        [FromForm] int attachmentsCount = 0,
-        [FromForm] double latitude = 0,
-        [FromForm] double longitude = 0,
-        [FromForm] string paymentMethod = "",
-        [FromForm] decimal paymentAmount = 100000,
-        [FromForm] DateTime? appointmentDate = null,
-        [FromForm] string? appointmentTimeSlot = null,
-        [FromForm] IFormFile? idDocument = null,
-        [FromForm] IFormFile? addressProof = null)
+        [FromForm] CreateVerificationRequestFormDto form)
     {
         try
         {
@@ -274,31 +260,31 @@ public class ValidationsController : ControllerBase
             string? addressProofFileName = null;
             string? addressProofPath = null;
 
-            if (idDocument != null && idDocument.Length > 0)
+            if (form.IdDocument != null && form.IdDocument.Length > 0)
             {
-                (idDocumentFileName, idDocumentPath) = await _fileService.SaveFileAsync(idDocument, "verifications");
+                (idDocumentFileName, idDocumentPath) = await _fileService.SaveFileAsync(form.IdDocument, "verifications");
             }
 
-            if (addressProof != null && addressProof.Length > 0)
+            if (form.AddressProof != null && form.AddressProof.Length > 0)
             {
-                (addressProofFileName, addressProofPath) = await _fileService.SaveFileAsync(addressProof, "verifications");
+                (addressProofFileName, addressProofPath) = await _fileService.SaveFileAsync(form.AddressProof, "verifications");
             }
 
             var dto = new CreateVerificationRequestDto
             {
-                AddressId = string.IsNullOrEmpty(addressId) ? null : Guid.Parse(addressId),
-                RequestType = requestType,
-                Priority = priority,
-                IdType = idType,
-                PhotosProvided = photosProvided || idDocument != null,
-                DocumentsProvided = documentsProvided || addressProof != null,
-                AttachmentsCount = attachmentsCount,
-                Latitude = latitude,
-                Longitude = longitude,
-                PaymentMethod = paymentMethod,
-                PaymentAmount = paymentAmount,
-                AppointmentDate = appointmentDate,
-                AppointmentTimeSlot = appointmentTimeSlot
+                AddressId = string.IsNullOrEmpty(form.AddressId) ? null : Guid.Parse(form.AddressId),
+                RequestType = form.RequestType,
+                Priority = form.Priority,
+                IdType = form.IdType,
+                PhotosProvided = form.PhotosProvided || form.IdDocument != null,
+                DocumentsProvided = form.DocumentsProvided || form.AddressProof != null,
+                AttachmentsCount = form.AttachmentsCount,
+                Latitude = form.Latitude,
+                Longitude = form.Longitude,
+                PaymentMethod = form.PaymentMethod,
+                PaymentAmount = form.PaymentAmount,
+                AppointmentDate = form.AppointmentDate,
+                AppointmentTimeSlot = form.AppointmentTimeSlot
             };
 
             var verificationRequest = await _validationService.CreateVerificationRequestAsync(
