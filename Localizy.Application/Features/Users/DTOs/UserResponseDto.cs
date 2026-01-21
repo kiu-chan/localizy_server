@@ -13,8 +13,11 @@ public class UserResponseDto
     public DateTime? LastLoginAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    
+
     // Statistics
     public int TotalAddresses { get; set; }
     public int VerifiedAddresses { get; set; }
+    public Guid? ParentBusinessId { get; set; }
+    public string? ParentBusinessName { get; set; }
+    public int SubAccountsCount { get; set; }
 }

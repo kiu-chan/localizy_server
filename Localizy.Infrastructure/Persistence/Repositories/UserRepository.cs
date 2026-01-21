@@ -54,9 +54,9 @@ public class UserRepository : IUserRepository
     public async Task<IEnumerable<User>> SearchAsync(string searchTerm)
     {
         var lowerSearchTerm = searchTerm.ToLower();
-        
+
         return await _context.Users
-            .Where(u => 
+            .Where(u =>
                 u.FullName.ToLower().Contains(lowerSearchTerm) ||
                 u.Email.ToLower().Contains(lowerSearchTerm) ||
                 (u.Phone != null && u.Phone.Contains(searchTerm)) ||
@@ -103,5 +103,13 @@ public class UserRepository : IUserRepository
     public async Task<int> CountByStatusAsync(bool isActive)
     {
         return await _context.Users.CountAsync(u => u.IsActive == isActive);
+    }
+
+    public async Task<IEnumerable<User>> GetSubAccountsByParentAsync(Guid parentBusinessId)
+    {
+        return await _context.Users
+            .Where(u => u.ParentBusinessId == parentBusinessId)
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
     }
 }

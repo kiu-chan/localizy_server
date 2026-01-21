@@ -15,4 +15,6 @@ public interface IUserService
     Task<bool> DeleteAsync(Guid id);
     Task<bool> ToggleStatusAsync(Guid id);
     Task<bool> ChangePasswordAsync(Guid id, ChangePasswordDto dto);
+    Task<UserResponseDto> CreateSubAccountAsync(Guid parentBusinessId, CreateUserDto dto);
+    Task<IEnumerable<UserResponseDto>> GetSubAccountsAsync(Guid parentBusinessId);
 }

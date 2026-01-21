@@ -2,7 +2,6 @@ using Localizy.Application.Common.Interfaces;
 using Localizy.Application.Features.Users.DTOs;
 using Localizy.Domain.Entities;
 using Localizy.Domain.Enums;
-using BCrypt.Net;
 
 namespace Localizy.Application.Features.Users.Services;
 
@@ -67,25 +66,39 @@ public class UserService : IUserService
             SuspendedUsers = usersList.Count(u => !u.IsActive && u.LastLoginAt != null),
             InactiveUsers = usersList.Count(u => !u.IsActive && u.LastLoginAt == null),
             AdminUsers = usersList.Count(u => u.Role == UserRole.Admin),
-            ValidatorUsers = await _userRepository.CountByRoleAsync(UserRole.User), // Giả sử có UserRole.Validator
-            BusinessUsers = await _userRepository.CountByRoleAsync(UserRole.User), // Giả sử có UserRole.Business
+            ValidatorUsers = await _userRepository.CountByRoleAsync(UserRole.Validator),
+            BusinessUsers = await _userRepository.CountByRoleAsync(UserRole.Business),
             RegularUsers = usersList.Count(u => u.Role == UserRole.User)
         };
     }
 
     public async Task<UserResponseDto> CreateAsync(CreateUserDto dto)
     {
-        // Kiểm tra email đã tồn tại
         var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
         if (existingUser != null)
         {
-            throw new InvalidOperationException("Email đã được sử dụng");
+            throw new InvalidOperationException("Email is already in use");
         }
 
-        // Parse role
         if (!Enum.TryParse<UserRole>(dto.Role, true, out var userRole))
         {
             userRole = UserRole.User;
+        }
+
+        // Validate SubAccount must have ParentBusinessId
+        if (userRole == UserRole.SubAccount && !dto.ParentBusinessId.HasValue)
+        {
+            throw new InvalidOperationException("SubAccount must have a ParentBusinessId");
+        }
+
+        // Validate ParentBusinessId exists and is a Business
+        if (dto.ParentBusinessId.HasValue)
+        {
+            var parentBusiness = await _userRepository.GetByIdAsync(dto.ParentBusinessId.Value);
+            if (parentBusiness == null || parentBusiness.Role != UserRole.Business)
+            {
+                throw new InvalidOperationException("Invalid ParentBusinessId");
+            }
         }
 
         var user = new User
@@ -97,7 +110,8 @@ public class UserService : IUserService
             Location = dto.Location,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             IsActive = true,
-            Role = userRole
+            Role = userRole,
+            ParentBusinessId = userRole == UserRole.SubAccount ? dto.ParentBusinessId : null
         };
 
         var createdUser = await _userRepository.CreateAsync(user);
@@ -116,7 +130,7 @@ public class UserService : IUserService
         {
             var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
             if (existingUser != null && existingUser.Id != id)
-                throw new InvalidOperationException("Email đã được sử dụng");
+                throw new InvalidOperationException("Email is already in use");
             
             user.Email = dto.Email;
         }
@@ -166,16 +180,51 @@ public class UserService : IUserService
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null) return false;
 
-        // Verify current password
         if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
         {
-            throw new UnauthorizedAccessException("Mật khẩu hiện tại không đúng");
+            throw new UnauthorizedAccessException("Current password is incorrect");
         }
 
-        // Update password
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
         await _userRepository.UpdateAsync(user);
         return true;
+    }
+
+    public async Task<UserResponseDto> CreateSubAccountAsync(Guid parentBusinessId, CreateUserDto dto)
+    {
+        var parentBusiness = await _userRepository.GetByIdAsync(parentBusinessId);
+        if (parentBusiness == null || parentBusiness.Role != UserRole.Business)
+        {
+            throw new InvalidOperationException("Only Business accounts can create sub-accounts");
+        }
+
+        var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Email is already in use");
+        }
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = dto.Email,
+            FullName = dto.FullName,
+            Phone = dto.Phone,
+            Location = dto.Location,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            IsActive = true,
+            Role = UserRole.SubAccount,
+            ParentBusinessId = parentBusinessId
+        };
+
+        var createdUser = await _userRepository.CreateAsync(user);
+        return MapToDto(createdUser);
+    }
+
+    public async Task<IEnumerable<UserResponseDto>> GetSubAccountsAsync(Guid parentBusinessId)
+    {
+        var subAccounts = await _userRepository.GetSubAccountsByParentAsync(parentBusinessId);
+        return subAccounts.Select(MapToDto);
     }
 
     private static UserResponseDto MapToDto(User user)
@@ -194,7 +243,10 @@ public class UserService : IUserService
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt,
             TotalAddresses = user.TotalAddresses,
-            VerifiedAddresses = user.VerifiedAddresses
+            VerifiedAddresses = user.VerifiedAddresses,
+            ParentBusinessId = user.ParentBusinessId,
+            ParentBusinessName = user.ParentBusiness?.FullName,
+            SubAccountsCount = user.SubAccounts?.Count ?? 0
         };
     }
 }

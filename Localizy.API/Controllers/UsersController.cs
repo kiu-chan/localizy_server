@@ -2,6 +2,7 @@ using Localizy.Application.Features.Users.DTOs;
 using Localizy.Application.Features.Users.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Localizy.API.Controllers;
 
@@ -18,7 +19,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy thống kê users
+    /// Get user statistics (Admin only)
     /// </summary>
     [HttpGet("stats")]
     [Authorize(Roles = "Admin")]
@@ -29,7 +30,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Tìm kiếm users
+    /// Search users (Admin only)
     /// </summary>
     [HttpGet("search")]
     [Authorize(Roles = "Admin")]
@@ -40,7 +41,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Lọc users theo role
+    /// Filter users by role (Admin only)
     /// </summary>
     [HttpGet("filter/role/{role}")]
     [Authorize(Roles = "Admin")]
@@ -51,7 +52,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Lọc users theo status
+    /// Filter users by status (Admin only)
     /// </summary>
     [HttpGet("filter/status")]
     [Authorize(Roles = "Admin")]
@@ -62,7 +63,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy danh sách tất cả users (Chỉ Admin)
+    /// Get all users (Admin only)
     /// </summary>
     [HttpGet]
     [Authorize(Roles = "Admin")]
@@ -73,7 +74,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy thông tin user theo ID
+    /// Get user by ID
     /// </summary>
     [HttpGet("{id}")]
     public async Task<ActionResult<UserResponseDto>> GetById(Guid id)
@@ -81,13 +82,13 @@ public class UsersController : ControllerBase
         var user = await _userService.GetByIdAsync(id);
         
         if (user == null)
-            return NotFound(new { message = "Không tìm thấy user" });
+            return NotFound(new { message = "User not found" });
 
         return Ok(user);
     }
 
     /// <summary>
-    /// Tạo user mới (Chỉ Admin)
+    /// Create new user (Admin only)
     /// </summary>
     [HttpPost]
     [Authorize(Roles = "Admin")]
@@ -105,7 +106,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Cập nhật thông tin user
+    /// Update user
     /// </summary>
     [HttpPut("{id}")]
     public async Task<ActionResult<UserResponseDto>> Update(Guid id, [FromBody] UpdateUserDto dto)
@@ -115,7 +116,7 @@ public class UsersController : ControllerBase
             var user = await _userService.UpdateAsync(id, dto);
             
             if (user == null)
-                return NotFound(new { message = "Không tìm thấy user" });
+                return NotFound(new { message = "User not found" });
 
             return Ok(user);
         }
@@ -126,7 +127,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Xóa user (Chỉ Admin)
+    /// Delete user (Admin only)
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
@@ -135,13 +136,13 @@ public class UsersController : ControllerBase
         var result = await _userService.DeleteAsync(id);
         
         if (!result)
-            return NotFound(new { message = "Không tìm thấy user" });
+            return NotFound(new { message = "User not found" });
 
         return NoContent();
     }
 
     /// <summary>
-    /// Toggle trạng thái user (Active/Suspended)
+    /// Toggle user status (Active/Suspended) (Admin only)
     /// </summary>
     [HttpPatch("{id}/toggle-status")]
     [Authorize(Roles = "Admin")]
@@ -150,13 +151,13 @@ public class UsersController : ControllerBase
         var result = await _userService.ToggleStatusAsync(id);
         
         if (!result)
-            return NotFound(new { message = "Không tìm thấy user" });
+            return NotFound(new { message = "User not found" });
 
-        return Ok(new { message = "Đã cập nhật trạng thái user" });
+        return Ok(new { message = "User status updated successfully" });
     }
 
     /// <summary>
-    /// Đổi mật khẩu
+    /// Change password
     /// </summary>
     [HttpPost("{id}/change-password")]
     public async Task<ActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordDto dto)
@@ -166,13 +167,54 @@ public class UsersController : ControllerBase
             var result = await _userService.ChangePasswordAsync(id, dto);
             
             if (!result)
-                return NotFound(new { message = "Không tìm thấy user" });
+                return NotFound(new { message = "User not found" });
 
-            return Ok(new { message = "Đã đổi mật khẩu thành công" });
+            return Ok(new { message = "Password changed successfully" });
         }
         catch (UnauthorizedAccessException ex)
         {
             return Unauthorized(new { message = ex.Message });
         }
+    }
+
+    /// <summary>
+    /// Create sub-account for Business (Business only)
+    /// </summary>
+    [HttpPost("sub-accounts")]
+    [Authorize(Roles = "Business")]
+    public async Task<ActionResult<UserResponseDto>> CreateSubAccount([FromBody] CreateUserDto dto)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var businessId))
+            {
+                return Unauthorized(new { message = "Invalid user" });
+            }
+
+            var user = await _userService.CreateSubAccountAsync(businessId, dto);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get sub-accounts of current Business (Business only)
+    /// </summary>
+    [HttpGet("my-sub-accounts")]
+    [Authorize(Roles = "Business")]
+    public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetMySubAccounts()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var businessId))
+        {
+            return Unauthorized(new { message = "Invalid user" });
+        }
+
+        var subAccounts = await _userService.GetSubAccountsAsync(businessId);
+        return Ok(subAccounts);
     }
 }

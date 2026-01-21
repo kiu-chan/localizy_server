@@ -35,6 +35,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Avatar).HasMaxLength(500);
             entity.Property(e => e.Role).HasConversion<string>();
             entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasOne(u => u.ParentBusiness)
+                .WithMany(u => u.SubAccounts)
+                .HasForeignKey(u => u.ParentBusinessId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Configure Project

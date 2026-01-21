@@ -17,4 +17,5 @@ public interface IUserRepository
     Task<bool> ExistsAsync(Guid id);
     Task<int> CountByRoleAsync(UserRole role);
     Task<int> CountByStatusAsync(bool isActive);
+    Task<IEnumerable<User>> GetSubAccountsByParentAsync(Guid parentBusinessId);
 }
