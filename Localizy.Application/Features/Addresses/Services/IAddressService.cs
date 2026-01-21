@@ -7,6 +7,7 @@ public interface IAddressService
     Task<AddressResponseDto?> GetByIdAsync(Guid id);
     Task<IEnumerable<AddressResponseDto>> GetAllAsync();
     Task<IEnumerable<AddressResponseDto>> SearchAsync(string searchTerm);
+    Task<IEnumerable<AddressSearchResponseDto>> SearchSimpleAsync(string searchTerm);
     Task<IEnumerable<AddressResponseDto>> FilterByStatusAsync(string status);
     Task<IEnumerable<AddressResponseDto>> FilterByTypeAsync(string type);
     Task<IEnumerable<AddressResponseDto>> GetByUserAsync(Guid userId);
@@ -19,4 +20,5 @@ public interface IAddressService
     Task IncrementViewsAsync(Guid id);
     Task<IEnumerable<AddressCoordinateDto>> GetAllCoordinatesAsync();
     Task<AddressResponseDto?> GetDetailByIdAsync(Guid id);
+    Task<IEnumerable<AddressSearchResponseDto>> GetByUserSimpleAsync(Guid userId);
 }

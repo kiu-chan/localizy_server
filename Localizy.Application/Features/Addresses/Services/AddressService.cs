@@ -39,6 +39,18 @@ public class AddressService : IAddressService
         return addresses.Select(MapToDto);
     }
 
+    public async Task<IEnumerable<AddressSearchResponseDto>> SearchSimpleAsync(string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var allAddresses = await _addressRepository.GetAllAsync();
+            return allAddresses.Select(MapToSearchDto);
+        }
+
+        var addresses = await _addressRepository.SearchAsync(searchTerm);
+        return addresses.Select(MapToSearchDto);
+    }
+
     public async Task<IEnumerable<AddressResponseDto>> FilterByStatusAsync(string status)
     {
         if (!Enum.TryParse<AddressStatus>(status, true, out var addressStatus))
@@ -60,6 +72,12 @@ public class AddressService : IAddressService
     {
         var addresses = await _addressRepository.GetByUserAsync(userId);
         return addresses.Select(MapToDto);
+    }
+
+    public async Task<IEnumerable<AddressSearchResponseDto>> GetByUserSimpleAsync(Guid userId)
+    {
+        var addresses = await _addressRepository.GetByUserAsync(userId);
+        return addresses.Select(MapToSearchDto);
     }
 
     public async Task<AddressStatsDto> GetStatsAsync()
@@ -269,6 +287,22 @@ public class AddressService : IAddressService
             RejectionReason = address.RejectionReason,
             CreatedAt = address.CreatedAt,
             UpdatedAt = address.UpdatedAt
+        };
+    }
+
+    private static AddressSearchResponseDto MapToSearchDto(Address address)
+    {
+        return new AddressSearchResponseDto
+        {
+            Id = address.Id,
+            Name = address.Name,
+            Address = address.FullAddress,
+            Type = address.Type,
+            Coordinates = new CoordinatesDto
+            {
+                Lat = address.Latitude,
+                Lng = address.Longitude
+            }
         };
     }
 }

@@ -32,9 +32,9 @@ public class AddressesController : ControllerBase
     /// Search addresses
     /// </summary>
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<AddressResponseDto>>> Search([FromQuery] string searchTerm)
+    public async Task<ActionResult<IEnumerable<AddressSearchResponseDto>>> Search([FromQuery] string searchTerm)
     {
-        var addresses = await _addressService.SearchAsync(searchTerm);
+        var addresses = await _addressService.SearchSimpleAsync(searchTerm);
         return Ok(addresses);
     }
 
@@ -74,7 +74,7 @@ public class AddressesController : ControllerBase
     /// </summary>
     [HttpGet("my-addresses")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<AddressResponseDto>>> GetMyAddresses()
+    public async Task<ActionResult<IEnumerable<AddressSearchResponseDto>>> GetMyAddresses()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
@@ -82,7 +82,7 @@ public class AddressesController : ControllerBase
             return Unauthorized(new { message = "Invalid user" });
         }
 
-        var addresses = await _addressService.GetByUserAsync(userId);
+        var addresses = await _addressService.GetByUserSimpleAsync(userId);
         return Ok(addresses);
     }
 
@@ -113,7 +113,7 @@ public class AddressesController : ControllerBase
     public async Task<ActionResult<AddressResponseDto>> GetDetailById(Guid id)
     {
         var address = await _addressService.GetDetailByIdAsync(id);
-        
+
         if (address == null)
             return NotFound(new { message = "Address not found" });
 
@@ -127,7 +127,7 @@ public class AddressesController : ControllerBase
     public async Task<ActionResult<AddressResponseDto>> GetById(Guid id)
     {
         var address = await _addressService.GetByIdAsync(id);
-        
+
         if (address == null)
             return NotFound(new { message = "Address not found" });
 
@@ -171,7 +171,7 @@ public class AddressesController : ControllerBase
         try
         {
             var address = await _addressService.UpdateAsync(id, dto);
-            
+
             if (address == null)
                 return NotFound(new { message = "Address not found" });
 
@@ -191,7 +191,7 @@ public class AddressesController : ControllerBase
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _addressService.DeleteAsync(id);
-        
+
         if (!result)
             return NotFound(new { message = "Address not found" });
 
@@ -212,7 +212,7 @@ public class AddressesController : ControllerBase
         }
 
         var address = await _addressService.VerifyAsync(id, userId, dto);
-        
+
         if (address == null)
             return NotFound(new { message = "Address not found" });
 
@@ -238,7 +238,7 @@ public class AddressesController : ControllerBase
         }
 
         var address = await _addressService.RejectAsync(id, userId, dto);
-        
+
         if (address == null)
             return NotFound(new { message = "Address not found" });
 
