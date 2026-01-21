@@ -181,31 +181,58 @@ public class ValidationService : IValidationService
         return true;
     }
 
-    public async Task<ValidationResponseDto?> VerifyAsync(Guid id, Guid verifiedByUserId, VerifyValidationDto dto)
+public async Task<ValidationResponseDto?> VerifyAsync(Guid id, Guid verifiedByUserId, VerifyValidationDto dto)
+{
+    var validation = await _validationRepository.GetByIdAsync(id);
+    if (validation == null) return null;
+
+    validation.Status = ValidationStatus.Verified;
+    validation.ProcessedByUserId = verifiedByUserId;
+    validation.ProcessedDate = DateTime.UtcNow;
+    validation.ProcessingNotes = dto.Notes;
+
+    if (validation.AddressId.HasValue)
     {
-        var validation = await _validationRepository.GetByIdAsync(id);
-        if (validation == null) return null;
-
-        validation.Status = ValidationStatus.Verified;
-        validation.ProcessedByUserId = verifiedByUserId;
-        validation.ProcessedDate = DateTime.UtcNow;
-        validation.ProcessingNotes = dto.Notes;
-
-        if (validation.AddressId.HasValue)
+        // Update existing address
+        var address = await _addressRepository.GetByIdAsync(validation.AddressId.Value);
+        if (address != null)
         {
-            var address = await _addressRepository.GetByIdAsync(validation.AddressId.Value);
-            if (address != null)
-            {
-                address.Status = AddressStatus.Verified;
-                address.VerifiedByUserId = verifiedByUserId;
-                address.VerifiedDate = DateTime.UtcNow;
-                await _addressRepository.UpdateAsync(address);
-            }
+            address.Status = AddressStatus.Verified;
+            address.VerifiedByUserId = verifiedByUserId;
+            address.VerifiedDate = DateTime.UtcNow;
+            await _addressRepository.UpdateAsync(address);
         }
-
-        var updatedValidation = await _validationRepository.UpdateAsync(validation);
-        return MapToDto(updatedValidation);
     }
+    else
+    {
+        // Create new address from validation data
+        var newAddress = new Address
+        {
+            Id = Guid.NewGuid(),
+            Name = string.Empty,
+            FullAddress = string.Empty,
+            Country = string.Empty,
+            Type = string.Empty,
+            Category = string.Empty,
+            Status = AddressStatus.Verified,
+            Latitude = validation.Latitude ?? 0,
+            Longitude = validation.Longitude ?? 0,
+            SubmittedByUserId = validation.SubmittedByUserId,
+            SubmittedDate = validation.SubmittedDate,
+            VerifiedByUserId = verifiedByUserId,
+            VerifiedDate = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createdAddress = await _addressRepository.CreateAsync(newAddress);
+        
+        // Link the new address to the validation
+        validation.AddressId = createdAddress.Id;
+    }
+
+    var updatedValidation = await _validationRepository.UpdateAsync(validation);
+    return MapToDto(updatedValidation);
+}
 
     public async Task<ValidationResponseDto?> RejectAsync(Guid id, Guid rejectedByUserId, RejectValidationDto dto)
     {

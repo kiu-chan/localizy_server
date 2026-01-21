@@ -33,7 +33,7 @@ public class DatabaseTestController : ControllerBase
                     database = _context.Database.GetDbConnection().Database,
                     projectCount,
                     translationCount,
-                    buildNumber = 7
+                    buildNumber = 8
                 });
             }
 
