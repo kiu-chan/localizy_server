@@ -131,7 +131,7 @@ public class UserService : IUserService
             var existingUser = await _userRepository.GetByEmailAsync(dto.Email);
             if (existingUser != null && existingUser.Id != id)
                 throw new InvalidOperationException("Email is already in use");
-            
+
             user.Email = dto.Email;
         }
 
@@ -175,17 +175,28 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<bool> ChangePasswordAsync(Guid id, ChangePasswordDto dto)
+    public async Task<bool> ChangePasswordAsync(Guid id, ChangePasswordDto dto, bool skipCurrentPasswordCheck = false)
     {
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null) return false;
 
-        if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+        // If not admin changing other's password, verify current password
+        if (!skipCurrentPasswordCheck)
         {
-            throw new UnauthorizedAccessException("Current password is incorrect");
+            if (string.IsNullOrEmpty(dto.CurrentPassword))
+            {
+                throw new UnauthorizedAccessException("Current password is required");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+            {
+                throw new UnauthorizedAccessException("Current password is incorrect");
+            }
         }
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.UpdatedAt = DateTime.UtcNow;
+
         await _userRepository.UpdateAsync(user);
         return true;
     }
